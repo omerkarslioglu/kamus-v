@@ -1,3 +1,8 @@
+module kamus_EX(
+    input operation_e operation_i,  
+);
+    
+    
     function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, logic [31:0] rs2_value);
 
     logic [31:0] rs2_value_or_imm = instr.immediate_used ? instr.immediate : rs2_value;
@@ -23,7 +28,9 @@
         AUIPC: return instr.immediate + instr.pc;
         // JAL(R) stores the address of the instruction that followed the jump
         JAL, JALR: return instr.pc + 4;
-        //CSRRW, CSRRS, CSRRC: return read_csr(csr_t'(instr.funct12));
+        CSRRW, CSRRS, CSRRC: return read_csr(csr_t'(instr.funct12));
         default: return 'x;
     endcase
     endfunction
+
+endmodule
