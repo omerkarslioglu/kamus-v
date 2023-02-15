@@ -7,10 +7,11 @@ module register_file(
     input logic rs2_addr_i,         // source2 register addr
     input logic rd_addr_i,          // destination reister addr
     
-    input logic [32:0] wr_data_i,   // write data
+    input logic [31:0] wr_data_i,   // write data
     
     output logic rd_data1_o,        // read data1
-    output logic rd_data2_o         // read data2
+    output logic rd_data2_o,        // read data2
+    output logic zero_o
 );
 
 logic [31:0] registers [32];
@@ -23,7 +24,8 @@ always_ff(posedge clk_i) begin
             registers[i] <= 32'b0;
         end
     end else begin
-        if(reg_wr_en) registers[rd_addr_i] <= wr_data_i;
+        if(reg_wr_en & (rd_addr_i!=5'b0)) registers[rd_addr_i] <= wr_data_i;
+        else registers[rd_addr_i] <= registers[rd_addr_i];
     end
 end
 
