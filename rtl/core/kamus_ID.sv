@@ -122,9 +122,9 @@ function automatic logic [32:0] decode_immediate(logic [31:0] instr);
                 return {1'b1, sign_ext_20, instr[7], instr[30:25], instr[11:8], 1'b0};
             JAL_TYPE[6:2]: // uj-type
                 return {1'b1, sign_ext_12, instr[19:12], instr[20], instr[30:21], 1'b0};
-            LUI_TYPE, AUIPC_TYPE: // u-type
+            LUI_TYPE[6:2], AUIPC_TYPE[6:2]: // u-type
                 return {1'b1, instr[31:12], 12'b0};
-            CSR_TYPE: // no ordinary immediate but possibly a csr zimm (5-bit immediate)
+            CSR_TYPE[6:2]: // no ordinary immediate but possibly a csr zimm (5-bit immediate)
                 return {instr[14], 32'bx};
             default: // no immediate
                 return {1'b0, 32'bx};
