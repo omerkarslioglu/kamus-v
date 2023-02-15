@@ -108,5 +108,28 @@ function automatic logic validate_csr_op(logic write, csr_e csr);
 
 endfunction
 
+function automatic logic [32:0] decode_immediate(logic [31:0] instr);
+        // returns an extra top bit to indicate whether the immediate is used
+        // all except u-type instructions have sign-extended immediates.
+        logic [19:0] sign_ext_20 = {20{instr[31]}};
+        logic [11:0] sign_ext_12 = {12{instr[31]}};
+        unique case (instr`opcode)
+            LUI_TYPE[6:2], OPC_LOAD, OPC_OP_IMM: // i-type
+                return {1'b1, sign_ext_20, instr[31:20]};
+            OPC_STORE: // s-type
+                return {1'b1, sign_ext_20, instr[31:25], instr[11:7]};
+            OPC_BRANCH: // sb-type
+                return {1'b1, sign_ext_20, instr[7], instr[30:25], instr[11:8], 1'b0};
+            OPC_JAL: // uj-type
+                return {1'b1, sign_ext_12, instr[19:12], instr[20], instr[30:21], 1'b0};
+            OPC_LUI, OPC_AUIPC: // u-type
+                return {1'b1, instr[31:12], 12'b0};
+            OPC_SYSTEM: // no ordinary immediate but possibly a csr zimm (5-bit immediate)
+                return {instr[14], 32'bx};
+            default: // no immediate
+                return {1'b0, 32'bx};
+        endcase
+endfunction
+
 
 endmodule
