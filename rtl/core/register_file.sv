@@ -38,5 +38,5 @@ always_ff(posedge clk_i) begin
         rd_data2_o <= register[rs2_addr_i];        
     end
 end
-
+//deneme burada
 endmodule
