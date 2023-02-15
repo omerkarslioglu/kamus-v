@@ -14,18 +14,17 @@ module register_file(
     output logic zero_o
 );
 
-logic [31:0] registers [32];
+logic [31:0] registers [1:31];
 
 // register write
 always_ff(posedge clk_i) begin
     if(~rst_ni) begin
         // initial reset:
-        for(int i = 0; i<32; i++) begin
+        for(int i = 1; i<32; i++) begin
             registers[i] <= 32'b0;
         end
     end else begin
-        if(reg_wr_en & (rd_addr_i!=5'b0)) registers[rd_addr_i] <= wr_data_i;
-        else registers[rd_addr_i] <= registers[rd_addr_i];
+        if(reg_wr_en) registers[rd_addr_i] <= wr_data_i;
     end
 end
 
