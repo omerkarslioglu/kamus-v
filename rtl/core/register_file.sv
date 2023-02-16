@@ -1,5 +1,5 @@
 module register_file(
-    input clk_i, rst_ni,
+    input logic clk_i, rst_ni,
 
     input logic reg_wr_en,
 
@@ -17,7 +17,7 @@ module register_file(
 logic [31:0] registers [1:31];
 
 // register write
-always_ff(posedge clk_i) begin
+always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
         // initial reset:
         for(int i = 1; i<32; i++) begin
@@ -29,13 +29,13 @@ always_ff(posedge clk_i) begin
 end
 
 // read reg
-always_ff(posedge clk_i) begin
+always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
         rd_data1_o <= 32'b0;
         rd_data2_o <= 32'b0;
     end else begin
-        rd_data1_o <= register[rs1_addr_i];
-        rd_data2_o <= register[rs2_addr_i];        
+        rd_data1_o <= registers[rs1_addr_i];
+        rd_data2_o <= registers[rs2_addr_i];        
     end
 end
 

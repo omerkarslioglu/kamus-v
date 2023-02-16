@@ -1,14 +1,19 @@
 /*
     Instruction Decoder
 */
-
-module kamus_ID import omer_pkg::;(
+`include "kamus_pkg.svh"
+import kamus_pkg::*;
+module kamus_ID(
     input logic [31:0]      instr_i,
+    
     output operation_e      operation_o,
-    output instr_decoded_t    instr_o
+    output instr_decoded_t  instr_o,
+    output logic            immediate_used_o,
+    output logic [31:0]     immediate_o           
 );
 
 logic [6:0] opcode;
+logic [32:0] immediate_val;
 
 assign opcode = instr_i[6:0];
 
@@ -22,15 +27,19 @@ assign instr_o.imm_i        = instr_i[31:20];
 assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
 assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
 assign instr_o.imm_u        = instr_i[31:12];
-assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr[12:19]};
+assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
 
-assign operation_o          = decode_opcode(instr_i);          
+assign operation_o          = decode_opcode(instr_i);
+
+assign immediate_val        = decode_immediate(instr_i);
+assign immediate_used_o     = immediate_val[32];
+assign immediate_o          = immediate_val[31:0];
 
 function automatic operation_e decode_opcode(logic [31:0] instr);
     logic [11:0] funct12 = instr`funct12;
     logic [2:0]  funct3  = instr`funct3;
     logic [4:0]  rs1 = instr`rs1;
-    logic legal_csr_op = validate_csr_op(rs1 != zero, csr_t'(funct12));
+    logic legal_csr_op = validate_csr_op(rs1 != zero, csr_e'(funct12));
 
     // ensure the two LSBs are 1
     if (instr`opext != 2'b11)
@@ -91,7 +100,7 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
 endfunction
 
 function automatic logic validate_csr_op(logic write, csr_e csr);
-    // first check we aren't writing to a read-only CSR
+    // first check we aren't writing to a read-only CSR.mem.txt
     if (write && csr[11:10] == 2'b11)
         return '0;
     unique case (csr)
@@ -130,6 +139,5 @@ function automatic logic [32:0] decode_immediate(logic [31:0] instr);
                 return {1'b0, 32'bx};
         endcase
 endfunction
-
 
 endmodule
