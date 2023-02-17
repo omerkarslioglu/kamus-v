@@ -1,5 +1,8 @@
 module kamus_EX(
-    input operation_e operation_i,  
+    input operation_e operation_i,
+    input logic [31:0] rs1_value,
+    input logic [31:0] rs2_value,
+
 );
     
     

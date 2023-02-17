@@ -27,11 +27,12 @@ typedef struct packed {
     logic [4:0]     rs1;
     logic [4:0]     rs2;
     logic [6:0]     func7;
-    logic [11:0]    imm_i;
-    logic [11:0]    imm_s;
-    logic [11:0]    imm_b;
-    logic [20:0]    imm_u;
-    logic [20:0]    imm_j;
+    // logic [11:0]    imm_i;
+    // logic [11:0]    imm_s;
+    // logic [11:0]    imm_b;
+    // logic [20:0]    imm_u;
+    // logic [20:0]    imm_j;
+    logic [31:0]    imm;
 }instr_decoded_t;
 
 // careful: last two bit 11 (you can use first 5 bit if you want)

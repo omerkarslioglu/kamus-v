@@ -2,14 +2,17 @@
     Instruction Decoder
 */
 `include "kamus_pkg.svh"
-import kamus_pkg::*;
-module kamus_ID(
+//import kamus_pkg::*;
+
+module kamus_ID #(
+    parameter PC_WIDTH = 32
+)(
     input logic [31:0]      instr_i,
     
     output operation_e      operation_o,
     output instr_decoded_t  instr_o,
     output logic            immediate_used_o,
-    output logic [31:0]     immediate_o           
+    output logic [31:0]     pc_o        
 );
 
 logic [6:0] opcode;
@@ -23,17 +26,18 @@ assign instr_o.func3        = instr_i[14:12];
 assign instr_o.rs1          = instr_i[19:15];
 assign instr_o.rs2          = instr_i[24:20];
 assign instr_o.func7        = instr_i[31:25];
-assign instr_o.imm_i        = instr_i[31:20];
-assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
-assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
-assign instr_o.imm_u        = instr_i[31:12];
-assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
+// assign instr_o.imm_i        = instr_i[31:20];
+// assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
+// assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
+// assign instr_o.imm_u        = instr_i[31:12];
+// assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
+assign instr_o.imm          = immediate_val[31:0];
 
 assign operation_o          = decode_opcode(instr_i);
 
 assign immediate_val        = decode_immediate(instr_i);
 assign immediate_used_o     = immediate_val[32];
-assign immediate_o          = immediate_val[31:0];
+
 
 function automatic operation_e decode_opcode(logic [31:0] instr);
     logic [11:0] funct12 = instr`funct12;
@@ -117,6 +121,8 @@ function automatic logic validate_csr_op(logic write, csr_e csr);
 
 endfunction
 
+
+// sign extended decoded
 function automatic logic [32:0] decode_immediate(logic [31:0] instr);
         // returns an extra top bit to indicate whether the immediate is used
         // all except u-type instructions have sign-extended immediates.
