@@ -24,8 +24,8 @@ typedef struct packed {
     logic [6:0]     opcode;
     logic [4:0]     rd;
     logic [2:0]     func3;
-    logic [4:0]     rs1;
-    logic [4:0]     rs2;
+    register_e      rs1_addr;
+    register_e      rs2_addr;
     logic [6:0]     func7;
     // logic [11:0]    imm_i;
     // logic [11:0]    imm_s;
@@ -33,6 +33,11 @@ typedef struct packed {
     // logic [20:0]    imm_u;
     // logic [20:0]    imm_j;
     logic [31:0]    imm;
+    logic           immediate_used;
+    funct12_t       funct12;
+    logic [31:0]    pc;
+    operation_e     operation;
+   
 }instr_decoded_t;
 
 // careful: last two bit 11 (you can use first 5 bit if you want)
@@ -48,7 +53,7 @@ typedef enum logic [6:0] {
     ALU_TYPE    = 7'b0110011,
     FENCE_TYPE  = 7'b0001111,
     CSR_TYPE    = 7'b1110011
-} instr_types_e;
+}instr_types_e;
 
 // internal, decoded opcodes
 typedef enum logic [4:0] {
