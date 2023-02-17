@@ -9,9 +9,8 @@ module register_file(
     
     input logic [31:0] wr_data_i,   // write data
     
-    output logic rd_data1_o,        // read data1
-    output logic rd_data2_o,        // read data2
-    output logic zero_o
+    output logic rs1_val_o,        // read data1
+    output logic rs2_val_o         // read data2
 );
 
 logic [31:0] registers [1:31];
@@ -31,11 +30,11 @@ end
 // read reg
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
-        rd_data1_o <= 32'b0;
-        rd_data2_o <= 32'b0;
+        rs1_val_o <= 32'b0;
+        rs2_val_o <= 32'b0;
     end else begin
-        rd_data1_o <= registers[rs1_addr_i];
-        rd_data2_o <= registers[rs2_addr_i];        
+        rs1_val_o <= registers[rs1_addr_i];
+        rs2_val_o <= registers[rs2_addr_i];        
     end
 end
 

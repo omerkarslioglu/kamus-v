@@ -7,11 +7,15 @@
 module kamus_ID #(
     parameter PC_WIDTH = 32
 )(
+    input logic clk_i, rst_ni,
+
     input logic [31:0]      instr_i,
     input logic [31:0]      pc_i,
     
-    output operation_e      operation_o,
-    output instr_decoded_t  instr_o     
+    output instr_decoded_t  instr_o,
+    output logic [31:0]     pc_o,
+    output logic [31:0]     rs1_val_o,
+    output logic [31:0]     rs2_val_o     
 );
 
 logic [6:0] opcode;
@@ -20,22 +24,35 @@ logic [32:0] immediate_val;
 assign opcode = instr_i[6:0];
 
 assign instr_o.opcode           = instr_i[6:0];
-assign instr_o.rd               = instr_i[11:7];
-assign instr_o.func3            = instr_i[14:12];
-assign instr_o.rs1_addr         = instr_i[19:15];
-assign instr_o.rs2_addr         = instr_i[24:20];
-assign instr_o.func7            = instr_i[31:25];
+//assign instr_o.rd_addr          = instr_i[11:7];
+//assign instr_o.func3            = instr_i[14:12];
+//assign instr_o.rs1_addr         = instr_i[19:15];
+//assign instr_o.rs2_addr         = instr_i[24:20];
+//assign instr_o.func7            = instr_i[31:25];
 // assign instr_o.imm_i        = instr_i[31:20];
 // assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
 // assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
 // assign instr_o.imm_u        = instr_i[31:12];
 // assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
-assign instr_o.imm              = immediate_val[31:0];
+assign instr_o.immediate        = immediate_val[31:0];
 assign instr_o.immediate_used   = immediate_val[32];
 assign instr_o.pc               = pc_i;
 assign instr_o.operation        = decode_opcode(instr_i);
 
 assign immediate_val            = decode_immediate(instr_i);
+
+
+// register_file.sv instantiate:
+register_file register_file(
+    .clk_i(clk_i), 
+    .rst_ni(rst_ni),
+    .rs1_addr_i(instr_i`rs1),           
+    .rs2_addr_i(instr_i`rs2),    
+    .rd_addr_i(instr_i`rd),            
+    .wr_data_i(...),      
+    .rs1_val_o(rs1_val_o),
+    .rs2_val_o(rs2_val_o)
+);
 
 
 function automatic operation_e decode_opcode(logic [31:0] instr);

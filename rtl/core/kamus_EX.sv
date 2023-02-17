@@ -1,13 +1,17 @@
 module kamus_EX(
-    input operation_e operation_i,
-    input logic [31:0] rs1_value,
-    input logic [31:0] rs2_value,
+    input instr_decoded_t instr_i,
+    input logic [31:0] rs1_value_i,
+    input logic [31:0] rs2_value_i,
 
+    output logic [31:0] alu_o
 );
-    
-    
-    function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, logic [31:0] rs2_value);
 
+always_comb begin
+    alu_o = execute(instr_i, rs1_value_i, rs2_value_i);
+end
+
+
+function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, logic [31:0] rs2_value);
     logic [31:0] rs2_value_or_imm = instr.immediate_used ? instr.immediate : rs2_value;
 
     // implement both logical and arithmetic as an arithmetic right shift, with a 33rd bit set to 0 or 1 as required.
@@ -16,7 +20,7 @@ module kamus_EX(
     // shifts use the lower 5 bits of the intermediate or rs2 value
     logic [4:0] shift_amount = rs2_value_or_imm[4:0];
 
-    unique case (instr.op)
+    unique case (instr.operation)
         ADD:   return rs1_value + rs2_value_or_imm;
         SUB:   return rs1_value - rs2_value;
         SLT:   return $signed(rs1_value) < $signed(rs2_value_or_imm);
@@ -34,6 +38,6 @@ module kamus_EX(
         CSRRW, CSRRS, CSRRC: return read_csr(csr_t'(instr.funct12));
         default: return 'x;
     endcase
-    endfunction
+endfunction
 
 endmodule

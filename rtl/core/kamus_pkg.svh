@@ -21,23 +21,23 @@ typedef enum logic [4:0] {
 } register_e;
 
 typedef struct packed {
-    logic [6:0]     opcode;
-    logic [4:0]     rd;
-    logic [2:0]     func3;
-    register_e      rs1_addr;
-    register_e      rs2_addr;
-    logic [6:0]     func7;
+    // logic [6:0]     opcode;
+    // logic [4:0]     rd_addr;
+    // logic [2:0]     func3;
+    // register_e      rs1_addr;
+    // register_e      rs2_addr;
+    // logic [6:0]     func7;
     // logic [11:0]    imm_i;
     // logic [11:0]    imm_s;
     // logic [11:0]    imm_b;
     // logic [20:0]    imm_u;
     // logic [20:0]    imm_j;
-    logic [31:0]    imm;
+    // connected to executed unit
+    logic [31:0]    immediate;
     logic           immediate_used;
     funct12_t       funct12;
     logic [31:0]    pc;
     operation_e     operation;
-   
 }instr_decoded_t;
 
 // careful: last two bit 11 (you can use first 5 bit if you want)
