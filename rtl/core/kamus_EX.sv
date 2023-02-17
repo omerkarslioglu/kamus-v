@@ -3,11 +3,11 @@ module kamus_EX(
     input logic [31:0] rs1_value_i,
     input logic [31:0] rs2_value_i,
 
-    output logic [31:0] alu_o
+    output logic [31:0] ex_o
 );
 
 always_comb begin
-    alu_o = execute(instr_i, rs1_value_i, rs2_value_i);
+    ex_o = execute(instr_i, rs1_value_i, rs2_value_i);
 end
 
 
@@ -35,9 +35,38 @@ function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, l
         AUIPC: return instr.immediate + instr.pc;
         // JAL(R) stores the address of the instruction that followed the jump
         JAL, JALR: return instr.pc + 4;
-        CSRRW, CSRRS, CSRRC: return read_csr(csr_t'(instr.funct12));
+        CSRRW, CSRRS, CSRRC: return read_csr(csr_e'(instr.funct12));
         default: return 'x;
     endcase
+endfunction
+
+// it will be updated
+function automatic logic [31:0] read_csr(csr_e csr_addr);
+        case (csr_addr)
+`ifdef MACHINE_MODE
+            MVENDORID, MARCHID, MIMPID, MHARTID, MEDELEG, MIDELEG: return '0;
+            MISA:      return 32'b01000000_00000000_00000001_00000000;
+            MTVEC:     return {mtvec[31:2], 2'b0}; // must be aligned on a 4-byte boundary
+            MSTATUS:   return {19'b0, 2'b11, 3'b0, mstatus.mpie, 3'b0, mstatus.mie, 3'b0};
+            MIP:       return {20'b0, mip.meip, 3'b0, mip.mtip, 3'b0, mip.msip, 3'b0};
+            MIE:       return {20'b0, mie.meie, 3'b0, mie.mtie, 3'b0, mie.msie, 3'b0};
+            MSCRATCH:  return mscratch;
+            MEPC:      return {mepc[31:2], 2'b0}; // must be aligned on a 4-byte boundary
+            MCAUSE:    return {mcause[31], 27'b0, mcause[3:0]};
+            MBADADDR:  return mbadaddr;
+            DSCRATCH:  return dscratch;
+            MINSTRET:  return instret[31:0];
+            MINSTRETH: return instret[63:32];
+            MTIMECMP:  return timecmp[31:0];
+            MTIMECMPH: return timecmp[63:32];
+            // since we have a fixed frequency, we can say time = cycle count.
+            MCYCLE,  MTIME:  return cycles[31:0];
+            MCYCLEH, MTIMEH: return cycles[63:32];
+`endif
+            CYCLE,  TIME:  return cycles[31:0];
+            CYCLEH, TIMEH: return cycles[63:32];
+            default:   return 'x;
+        endcase
 endfunction
 
 endmodule
