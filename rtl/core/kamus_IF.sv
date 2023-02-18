@@ -31,8 +31,8 @@ always_comb @(posedge clk_i) begin
     case(instr_addr_sel)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
-        B_ST:       instr_addr_o = instr_b_imm_addr_i;
-        ALU_ST:     instr_addr_o = instr_alu_imm_addr_i;
+        B_ST:       instr_addr_o = pc_curr + instr_b_imm_addr_i;
+        ALU_ST:     instr_addr_o = instr_alu_imm_addr_i; // WILL BE UPDATED, LINK PC+4 MUST BE NEED
         default:    instr_addr_o = pc_next;
     endcase
 end
