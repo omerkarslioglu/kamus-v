@@ -20,6 +20,7 @@ typedef enum logic [4:0] {
     t3, t4, t5, t6
 } register_e;
 
+// ID - EX interface
 typedef struct packed {
     // logic [6:0]     opcode;
     // logic [4:0]     rd_addr;
