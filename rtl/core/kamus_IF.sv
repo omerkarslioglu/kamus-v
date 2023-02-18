@@ -3,13 +3,13 @@ module kamus_IF
     parameter logic [31:0] BOOT_ADDR = 32'h0;
 )(
     input clk_i, rst_ni,
-    input logic [31:0] instr_val_i,
-    input logic [31:0] instr_b_imm_addr_i,    // comes from ID (for branch)
-    input logic [31:0] instr_alu_imm_addr_i,  // comes from ex (j etc.)
-    input logic [2:0] instr_addr_sel_i,     // for pc value selector mux (according to jal, branch etc.)
+    input logic [31:0]  instr_val_i,
+    input logic [31:0]  instr_b_imm_addr_i,     // comes from ID (for branch)
+    input logic [31:0]  instr_alu_imm_addr_i,   // comes from ex (j etc.)
+    input logic [2:0]   instr_addr_sel_i,       // for pc value selector mux (according to jal, branch etc.)
     
-    output logic [31:0] instr_val_o,        // just wire that connected to ID
-    output logic [31:0] instr_addr_o        // instr_addr = pc
+    output logic [31:0] instr_val_o,            // just wire that connected to ID
+    output logic [31:0] instr_addr_o            // instr_addr = pc
 );
 
 logic [31:0] pc_next;
