@@ -40,7 +40,7 @@ function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, l
     endcase
 endfunction
 
-// it will be updated
+// IT WILL BE UPDATED
 function automatic logic [31:0] read_csr(csr_e csr_addr);
         case (csr_addr)
 `ifdef MACHINE_MODE
