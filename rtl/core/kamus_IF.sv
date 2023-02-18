@@ -4,10 +4,12 @@ module kamus_IF
 )(
     input clk_i, rst_ni,
     input logic [31:0] instr_val_i,
-    input logic [31:0] instr_imm_addr,
-    input logic [2:0] instr_addr_sel_i, // for pc value selector mux (according to jal, branch etc.)
-    input logic [31:0] instr_val_o,
-    output logic [31:0] instr_addr_o // instr_addr = pc
+    input logic [31:0] instr_b_imm_addr_i,    // comes from ID (for branch)
+    input logic [31:0] instr_alu_imm_addr_i,  // comes from ex (j etc.)
+    input logic [2:0] instr_addr_sel_i,     // for pc value selector mux (according to jal, branch etc.)
+    
+    output logic [31:0] instr_val_o,        // just wire that connected to ID
+    output logic [31:0] instr_addr_o        // instr_addr = pc
 );
 
 logic [31:0] pc_next;
@@ -18,7 +20,8 @@ instr_addr_sel_state_e instr_addr_sel;
 enum bit [2:0] {
     PC4_ST, // PC+4 state
     PC_ST, // PC state for state
-    IMM_ST
+    B_ST,
+    ALU_ST
 }instr_addr_sel_state_e;
 
 assign instr_val_o = instr_val_i;
@@ -28,7 +31,8 @@ always_comb @(posedge clk_i) begin
     case(instr_addr_sel)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
-        IMM_ST:     instr_addr_o = instr_imm_addr;
+        B_ST:       instr_addr_o = instr_b_imm_addr_i;
+        ALU_ST:     instr_addr_o = instr_alu_imm_addr_i;
         default:    instr_addr_o = pc_next;
     endcase
 end
