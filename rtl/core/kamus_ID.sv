@@ -79,7 +79,14 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                 F3_BGE:     return BGE;
                 F3_BGEU:    return BGEU;
             endcase
-        L_TYPE[6:2]:    return LOAD;
+        L_TYPE[6:2]:
+            unique case (funct3)
+                F3_LB:     return LB;
+                F3_LH:     return LH;
+                F3_LW:     return LW;
+                F3_LBU:    return LBU;
+                F3_LHU:    return LHU;
+            endcase
         S_TYPE[6:2]:    return STORE;
         ALU_I_TYPE, ALU_TYPE:
             unique case (funct3)

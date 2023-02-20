@@ -20,19 +20,30 @@ function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, l
     // shifts use the lower 5 bits of the intermediate or rs2 value
     logic [4:0] shift_amount = rs2_value_or_imm[4:0];
 
+    logic [31:0] ex_buff;
+
     unique case (instr.operation)
-        ADD:   return rs1_value + rs2_value_or_imm;
-        SUB:   return rs1_value - rs2_value;
-        SLT:   return $signed(rs1_value) < $signed(rs2_value_or_imm);
-        SLTU:  return rs1_value < rs2_value_or_imm;
-        XOR:   return rs1_value ^ rs2_value_or_imm;
-        OR:    return rs1_value | rs2_value_or_imm;
-        AND:   return rs1_value & rs2_value_or_imm;
-        SL:    return rs1_value << shift_amount;
-        SRL:   return rs1_value >> shift_amount;
-        SRA:   return $signed(rs1_value) >>> shift_amount;
-        LUI:   return instr.immediate;
-        AUIPC: return instr.immediate + instr.pc;
+        ADD, LW, LH, LHU, LB, LBU:
+            ex_buff = rs1_value + rs2_value_or_imm;
+            unique case (variable)
+                ADD, LW:    return ex_buff;
+                LH:         return {16{ex_buff[15]}, ex_buff[15:0]};
+                LHU:        return {16{1'b0}, ex_buff[15:0]};
+                LB:         return {8{ex_buff[7]}, ex_buff[7:0]};
+                LBU:        return {8{1'b0}, ex_buff[7:0]};
+            endcase
+            
+        SUB:    return rs1_value - rs2_value;
+        SLT:    return $signed(rs1_value) < $signed(rs2_value_or_imm);
+        SLTU:   return rs1_value < rs2_value_or_imm;
+        XOR:    return rs1_value ^ rs2_value_or_imm;
+        OR:     return rs1_value | rs2_value_or_imm;
+        AND:    return rs1_value & rs2_value_or_imm;
+        SL:     return rs1_value << shift_amount;
+        SRL:    return rs1_value >> shift_amount;
+        SRA:    return $signed(rs1_value) >>> shift_amount;
+        LUI:    return instr.immediate;
+        AUIPC:  return instr.immediate + instr.pc;
         // JAL(R) stores the address of the instruction that followed the jump
         JAL, JALR: return instr.pc + 4;
         CSRRW, CSRRS, CSRRC: return read_csr(csr_e'(instr.funct12));

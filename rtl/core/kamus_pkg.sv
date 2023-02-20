@@ -1,4 +1,5 @@
 package kamus_pkg;
+
 typedef enum logic [4:0] {
     zero,
     ra,
@@ -58,7 +59,7 @@ typedef enum logic [6:0] {
 }instr_types_e;
 
 // internal, decoded opcodes
-typedef enum logic [4:0] {
+typedef enum logic [5:0] {
     LUI,
     AUIPC,
     JAL,
@@ -69,8 +70,13 @@ typedef enum logic [4:0] {
     BGE,
     BLTU,
     BGEU,
-    LOAD,
-    STORE,
+    //LOAD,
+    LB,
+    LH,
+    LW,
+    LBU,
+    LHU,
+    //STORE,
     ADD,
     SUB,
     SLT,
@@ -143,12 +149,10 @@ typedef enum logic [2:0] {
     F3_ADDSUB = 3'b000,
     F3_SLT    = 3'b010,
     F3_SLTU   = 3'b011,
-    F3_XOR    = 3'b100,
-    F3_OR     = 3'b110,
-    F3_AND    = 3'b111,
+    F3_XOR   BGE  = 3'b111,
     F3_SLL    = 3'b001,
     F3_SR     = 3'b101
-} funct3_op_t;
+} funct3_op_e;
 
 typedef enum logic [2:0] {
     F3_BEQ  = 3'b000,
@@ -157,7 +161,7 @@ typedef enum logic [2:0] {
     F3_BGE  = 3'b101,
     F3_BLTU = 3'b110,
     F3_BGEU = 3'b111
-} funct3_branch_t;
+} funct3_branch_e;
 
 typedef enum logic [2:0] {
     F3_LB  = 3'b000,
@@ -165,7 +169,7 @@ typedef enum logic [2:0] {
     F3_LW  = 3'b010,
     F3_LBU = 3'b100,
     F3_LHU = 3'b101
-} funct3_load_t;
+} funct3_load_e;
 
 typedef enum logic [2:0] {
     F3_SB  = 3'b000,

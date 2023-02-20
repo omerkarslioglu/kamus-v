@@ -8,14 +8,14 @@ module kamus_LSU(
 );
 
 
-function automatic logic [3:0] compute_byte_enable(mem_width_t width, logic [1:0] word_offset);
-    unique case (width)
-        B: return 4'b0001 << word_offset; // selected LB
-        H: return 4'b0011 << word_offset; // selected LH
-        W: return 4'b1111 << word_offset; // selected LW
-        default: return 'x;
-    endcase
-endfunction
+// function automatic logic [3:0] compute_byte_enable(mem_width_t width, logic [1:0] word_offset);
+//     unique case (width)
+//         B: return 4'b0001 << word_offset; // selected LB
+//         H: return 4'b0011 << word_offset; // selected LH
+//         W: return 4'b1111 << word_offset; // selected LW
+//         default: return 'x;
+//     endcase
+// endfunction
 
 
 endmodule
