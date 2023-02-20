@@ -23,16 +23,16 @@ function automatic logic [31:0] execute(instr_t instr, logic [31:0] rs1_value, l
     logic [31:0] ex_buff;
 
     unique case (instr.operation)
-        ADD, LW, LH, LHU, LB, LBU:
+        ADD, LW, LH, LHU, LB, LBU, SW, SB, SH:
             ex_buff = rs1_value + rs2_value_or_imm;
             unique case (variable)
-                ADD, LW:    return ex_buff;
-                LH:         return {16{ex_buff[15]}, ex_buff[15:0]};
+                ADD, LW, SB:    return ex_buff;
+                LH, SH:         return {16{ex_buff[15]}, ex_buff[15:0]};
                 LHU:        return {16{1'b0}, ex_buff[15:0]};
-                LB:         return {8{ex_buff[7]}, ex_buff[7:0]};
+                LB, SB:         return {8{ex_buff[7]}, ex_buff[7:0]};
                 LBU:        return {8{1'b0}, ex_buff[7:0]};
             endcase
-            
+
         SUB:    return rs1_value - rs2_value;
         SLT:    return $signed(rs1_value) < $signed(rs2_value_or_imm);
         SLTU:   return rs1_value < rs2_value_or_imm;
