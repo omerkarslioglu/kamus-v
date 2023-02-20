@@ -3,7 +3,7 @@ module kamus_IF
     parameter logic [31:0] BOOT_ADDR = 32'h0;
 )(
     input clk_i, rst_ni,
-    input logic [31:0]  instr_val_i,
+    input logic [31:0]  instr_val_i,            // comes from $L1I
     input logic [31:0]  instr_imm_addr_i,       // comes from ID (for jump and branch)
     input logic [2:0]   instr_addr_sel_i,       // for pc value selector mux (according to jal, branch etc.)
     

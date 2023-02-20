@@ -2,7 +2,7 @@
     Instruction Decoder
 */
 `include "kamus_pkg.svh"
-//import kamus_pkg::*;
+import kamus_pkg::*;
 
 module kamus_ID #(
     parameter PC_WIDTH = 32
@@ -24,11 +24,11 @@ logic [32:0] immediate_val;
 assign opcode = instr_i[6:0];
 
 assign instr_o.opcode           = instr_i[6:0];
-//assign instr_o.rd_addr          = instr_i[11:7];
-//assign instr_o.func3            = instr_i[14:12];
-//assign instr_o.rs1_addr         = instr_i[19:15];
-//assign instr_o.rs2_addr         = instr_i[24:20];
-//assign instr_o.func7            = instr_i[31:25];
+// assign instr_o.rd_addr          = instr_i[11:7];
+// assign instr_o.func3            = instr_i[14:12];
+// assign instr_o.rs1_addr         = instr_i[19:15];
+// assign instr_o.rs2_addr         = instr_i[24:20];
+// assign instr_o.func7            = instr_i[31:25];
 // assign instr_o.imm_i        = instr_i[31:20];
 // assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
 // assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
