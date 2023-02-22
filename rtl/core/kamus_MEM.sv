@@ -3,7 +3,7 @@
         1-) Access to Data Memory to read or write
         2-) Access to Register File to write AFTER READING DATA MEM.
     
-    LSU covered L1 data cache with an interface and register for WB stage
+    MEM covered L1 data cache with an interface and register for WB stage
     to access register file (2) to write data.
 
     Omer Karslioglu - omerkarsliogluu@gmail.com - 22.02.2023
@@ -20,7 +20,7 @@
 
 //import kamus_pkg::*;
 
-module kamus_LSU(
+module kamus_MEM(
     input clk_i, rst_ni,
 
     // EX stage interface (prev. stage)
@@ -32,9 +32,8 @@ module kamus_LSU(
 
     // WB stage interface (next stage)
     output logic            regfile_wr_en_memwb_reg_o,  
-    output logic [31:0]     alu_memwb_reg_o             // the data that will be saved to regFile (and in MEM/WB register)
-    output logic [31:0]     l1d_rd_data_o,              // the data will be readed from l1d as sequential so no need MEM/WB reg -
-                                                        //      **l1d_rd_data_o shoud forward to WB stages
+    output logic [31:0]     alu_memwb_reg_o             // the data0 that will be saved to regFile (and in MEM/WB register)
+    output logic [31:0]     l1d_rd_data_memwb_reg_o,    // the data1 that will be saved to regFile (and in MEM/WB register)
     
     // $L1D Interface
     input logic [31:0]      l1d_rd_data_i,          
@@ -46,7 +45,6 @@ module kamus_LSU(
 assign l1d_wr_en_o          = l1d_wr_en_exmem_reg_i; 
 assign l1d_addr_o           = alu_rslt_exmem_reg_i;
 assign l1d_wr_data_o        = rs2_exmem_reg_i;
-assign l1d_rd_data_o        = l1d_rd_data_i;
 
 /*
     MEM/WB Register:
@@ -54,11 +52,11 @@ assign l1d_rd_data_o        = l1d_rd_data_i;
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
         regfile_wr_en_memwb_reg_o               <= 0;
-        reg_wr_data_memwb_reg_o                 <= 0;
         alu_memwb_reg_o                         <= 0;
     end else begin
         regfile_wr_en_memwb_reg_o               <= regfile_wr_en_exmem_i;
-        alu_memwb_reg_o                         <= alu_rslt_exmem_reg_i;      
+        alu_memwb_reg_o                         <= alu_rslt_exmem_reg_i;
+        assign l1d_rd_data_memwb_reg_o          <= l1d_rd_data_i;      
     end
 end
 
