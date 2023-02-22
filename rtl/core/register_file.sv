@@ -28,14 +28,9 @@ always_ff @(posedge clk_i) begin
 end
 
 // read reg
-always_ff @(posedge clk_i) begin
-    if(~rst_ni) begin
-        rs1_val_o <= 32'b0;
-        rs2_val_o <= 32'b0;
-    end else begin
-        rs1_val_o <= registers[rs1_addr_i];
-        rs2_val_o <= registers[rs2_addr_i];        
-    end
+always_comb begin
+    rs1_val_o <= registers[rs1_addr_i];
+    rs2_val_o <= registers[rs2_addr_i];        
 end
 
 endmodule
