@@ -20,11 +20,14 @@ module kamus_LSU(
     output logic [31:0]     l1d_rd_data_o, alu_o, pc4_o, // the datas that will be saved to regFile
 
     output logic            regfile_wr_en_o,
-    output logic [31:0]     mem_wr_data_o, reg_wr_data_o
+    output logic [31:0]     reg_wr_data_o
+
+    // $L1D Interface
+    output logic [31:0]     l1d_wr_addr_o;
+    output logic [31:0]     l1d_wr_data_o;
+    output logic            l1d_wr_en_i;
 );
 
-logic [31:0]  l1d_wr_addr;
-
-assign l1d_wr_addr = alu_rslt_i;
+assign l1d_wr_addr_o = alu_rslt_i;
 
 endmodule
