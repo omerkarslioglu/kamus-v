@@ -56,7 +56,7 @@ always_ff @(posedge clk_i) begin
     end else begin
         regfile_wr_en_memwb_reg_o               <= regfile_wr_en_exmem_i;
         alu_memwb_reg_o                         <= alu_rslt_exmem_reg_i;
-        assign l1d_rd_data_memwb_reg_o          <= l1d_rd_data_i;      
+        l1d_rd_data_memwb_reg_o                 <= l1d_rd_data_i;      
     end
 end
 
