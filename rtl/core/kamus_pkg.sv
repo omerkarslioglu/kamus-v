@@ -79,7 +79,7 @@ typedef enum logic [5:0] {
     //STORE,
     SW,
     SH,
-    SL,
+    SB,
     ADD,
     SUB,
     SLT,

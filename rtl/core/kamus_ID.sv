@@ -10,10 +10,9 @@ module kamus_ID #(
     input logic clk_i, rst_ni,
 
     input logic [31:0]      instr_i,
-    input logic [31:0]      pc_i,
+    input logic [31:0]      pc_i,       // comes from fetch stage: kamus_IF (instr_addr)
     
     output instr_decoded_t  instr_o,
-    output logic [31:0]     pc_o,
     output logic [31:0]     rs1_val_o,
     output logic [31:0]     rs2_val_o     
 );

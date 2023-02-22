@@ -1,21 +1,30 @@
-import kamus_pkg::*;
+/*
+    This module is important for two main stages:
+        1-) Access to Data Memory to read or write
+        2-) Access to Register File to write AFTER READING DATA MEM.
+    
+    LSU covered L1 data cache with an interface and register for WB stage
+    to access register file (2) to write data.
+
+    Omer Karslioglu - omerkarsliogluu@gmail.com - 22.02.2023
+*/
+
+
+//import kamus_pkg::*;
 
 module kamus_LSU(
-    input [31:0]    mem_addr_i,     // comes from kamus_ID imm value
-    input [31:0]    wr_data_i,      // comes from reg file
+    input logic [31:0]      alu_rslt_i,         // comes from kamus_EX (ALU)
+    input logic [31:0]      l1d_wr_data_i,      // comes from kamus_ID (regfile) (when store command taken)
+    input logic             l1d_wr_en_i,        // comes from  control unit
     
-    output          mem_wr_data_o, reg_wr_data_o
+    output logic [31:0]     l1d_rd_data_o, alu_o, pc4_o, // the datas that will be saved to regFile
+
+    output logic            regfile_wr_en_o,
+    output logic [31:0]     mem_wr_data_o, reg_wr_data_o
 );
 
+logic [31:0]  l1d_wr_addr;
 
-// function automatic logic [3:0] compute_byte_enable(mem_width_t width, logic [1:0] word_offset);
-//     unique case (width)
-//         B: return 4'b0001 << word_offset; // selected LB
-//         H: return 4'b0011 << word_offset; // selected LH
-//         W: return 4'b1111 << word_offset; // selected LW
-//         default: return 'x;
-//     endcase
-// endfunction
-
+assign l1d_wr_addr = alu_rslt_i;
 
 endmodule
