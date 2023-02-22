@@ -28,12 +28,16 @@ module kamus_MEM(
     input logic [31:0]      alu_rslt_exmem_reg_i,       // comes from kamus_EX (ALU)
         // comes from EX but they are related with Control Unit:
     input logic             l1d_wr_en_exmem_reg_i,      // comes from  kamus_EX (control unit)
-    input logic             regfile_wr_en_exmem_i,
+    input logic             regfile_wr_en_exmem_reg_i,
+    input logic [1:0]       wb_mux_sel_exmem_reg_i,
+    output logic [4:0]      rd_addr_exmem_reg_o,
 
     // WB stage interface (next stage)
     output logic            regfile_wr_en_memwb_reg_o,  
-    output logic [31:0]     alu_memwb_reg_o             // the data0 that will be saved to regFile (and in MEM/WB register)
+    output logic [31:0]     alu_memwb_reg_o,            // the data0 that will be saved to regFile (and in MEM/WB register)
     output logic [31:0]     l1d_rd_data_memwb_reg_o,    // the data1 that will be saved to regFile (and in MEM/WB register)
+    output logic [1:0]      wb_mux_sel_memwb_reg_o,
+    output logic [4:0]      rd_addr_memwb_reg_o,
     
     // $L1D Interface
     input logic [31:0]      l1d_rd_data_i,          
@@ -54,9 +58,11 @@ always_ff @(posedge clk_i) begin
         regfile_wr_en_memwb_reg_o               <= 0;
         alu_memwb_reg_o                         <= 0;
     end else begin
-        regfile_wr_en_memwb_reg_o               <= regfile_wr_en_exmem_i;
+        regfile_wr_en_memwb_reg_o               <= regfile_wr_en_exmem_reg_i;
         alu_memwb_reg_o                         <= alu_rslt_exmem_reg_i;
-        l1d_rd_data_memwb_reg_o                 <= l1d_rd_data_i;      
+        l1d_rd_data_memwb_reg_o                 <= l1d_rd_data_i; 
+        wb_mux_sel_memwb_reg_o                  <= wb_mux_sel_exmem_reg_i;
+        rd_addr_memwb_reg_o                     <= rd_addr_exmem_reg_o;    
     end
 end
 
