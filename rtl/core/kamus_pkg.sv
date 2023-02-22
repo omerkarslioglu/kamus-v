@@ -211,4 +211,9 @@ typedef enum logic [11:0] {
     F12_WFI    = 12'b000100000101
 } funct12_t;
 
+typedef enum logic [1:0]{
+    ALU_RESULT  = 2'b00;
+    MEM_RESULT  = 2'b01;
+} wb_options_e;
+
 endpackage

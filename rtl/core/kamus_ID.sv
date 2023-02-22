@@ -1,5 +1,9 @@
 /*
     Instruction Decoder
+
+    -- Must be updated:
+    -  Think that ID covers to the register file
+    --
 */
 `include "kamus_pkg.svh"
 import kamus_pkg::*;
@@ -13,8 +17,15 @@ module kamus_ID #(
     input logic [31:0]      pc_i,       // comes from fetch stage: kamus_IF (instr_addr)
     
     output instr_decoded_t  instr_o,
-    output logic [31:0]     rs1_val_o,
-    output logic [31:0]     rs2_val_o     
+    
+    // -- RegisterFile Interface:
+    input logic [31:0]      rs1_val_i,
+    input logic [31:0]      rs2_val_i,
+    output logic [4:0]      rs1_addr_o,
+    output logic [4:0]      rs2_addr_o,
+    output logic [4:0]      rd_addr_o
+    // --
+
 );
 
 logic [6:0] opcode;
@@ -37,21 +48,25 @@ assign instr_o.immediate        = immediate_val[31:0];
 assign instr_o.immediate_used   = immediate_val[32];
 assign instr_o.pc               = pc_i;
 assign instr_o.operation        = decode_opcode(instr_i);
-
 assign immediate_val            = decode_immediate(instr_i);
 
+// // register_file.sv instantiate:
+// register_file register_file(
+//     .clk_i(clk_i), 
+//     .rst_ni(rst_ni),
+//     .rs1_addr_i(instr_i`rs1),           
+//     .rs2_addr_i(instr_i`rs2),    
+//     .rd_addr_i(instr_i`rd),            
+//     .wr_data_i(...),      
+//     .rs1_val_o(rs1_val_o),
+//     .rs2_val_o(rs2_val_o)
+// );
 
-// register_file.sv instantiate:
-register_file register_file(
-    .clk_i(clk_i), 
-    .rst_ni(rst_ni),
-    .rs1_addr_i(instr_i`rs1),           
-    .rs2_addr_i(instr_i`rs2),    
-    .rd_addr_i(instr_i`rd),            
-    .wr_data_i(...),      
-    .rs1_val_o(rs1_val_o),
-    .rs2_val_o(rs2_val_o)
-);
+// -- for register file interface
+assign rs1_addr_o               = instr_i`rs1;
+assign rs2_addr_o               = instr_i`rs2;
+assign rd_addr_o                = instr_i`rd;
+// --
 
 
 function automatic operation_e decode_opcode(logic [31:0] instr);
