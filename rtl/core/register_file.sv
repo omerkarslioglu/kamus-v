@@ -9,8 +9,8 @@ module register_file(
     
     input logic [31:0] wr_data_i,   // write data
     
-    output logic rs1_val_o,        // read data1
-    output logic rs2_val_o         // read data2
+    output logic rs1_data_o,        // read data1
+    output logic rs2_data_o         // read data2
 );
 
 logic [31:0] registers [1:31];
@@ -29,8 +29,8 @@ end
 
 // read reg
 always_comb begin
-    rs1_val_o <= registers[rs1_addr_i];
-    rs2_val_o <= registers[rs2_addr_i];        
+    rs1_data_o <= registers[rs1_addr_i];
+    rs2_data_o <= registers[rs2_addr_i];        
 end
 
 endmodule

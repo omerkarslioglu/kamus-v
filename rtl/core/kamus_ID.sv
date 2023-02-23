@@ -13,25 +13,30 @@ module kamus_ID #(
 )(
     input logic clk_i, rst_ni,
 
-    input logic [31:0]      instr_i,
-    input logic [31:0]      pc_i,       // comes from fetch stage: kamus_IF (instr_addr)
+    // Interface between IF-ID stages
+    input logic [31:0]          instr_i,
+    input logic [31:0]          instr_addr_i,       // comes from fetch stage: kamus_IF (instr_addr)
+    output logic [31:0]          imm_instr_addr_o; 
     
-    output instr_decoded_t  instr_o,
+    // Interface between ID-EX stages
+    output instr_decoded_t      instr_o,
+    output logic [31:0]         rs1_data_o,
+    output logic [31:0]         rs2_data_o,
     
     // -- RegisterFile Interface:
-    input logic [31:0]      rs1_val_i,
-    input logic [31:0]      rs2_val_i,
-    output logic [4:0]      rs1_addr_o,
-    output logic [4:0]      rs2_addr_o,
-    output logic [4:0]      rd_addr_o
+    input logic [31:0]          rs1_data_i,
+    input logic [31:0]          rs2_data_i,
+    output logic [4:0]          rs1_addr_o,
+    output logic [4:0]          rs2_addr_o,
+    output logic [4:0]          rd_addr_o
     // --
 
 );
 
-logic [6:0] opcode;
+//logic [6:0] opcode;
 logic [32:0] immediate_val;
 
-assign opcode = instr_i[6:0];
+//assign opcode = instr_i[6:0];
 
 assign instr_o.opcode           = instr_i[6:0];
 // assign instr_o.rd_addr          = instr_i[11:7];
@@ -46,9 +51,14 @@ assign instr_o.opcode           = instr_i[6:0];
 // assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
 assign instr_o.immediate        = immediate_val[31:0];
 assign instr_o.immediate_used   = immediate_val[32];
-assign instr_o.pc               = pc_i;
+assign instr_o.pc               = instr_addr_i;
 assign instr_o.operation        = decode_opcode(instr_i);
 assign immediate_val            = decode_immediate(instr_i);
+assign rs1_data_o               = rs1_data_i;
+assign rs2_data_o               = rs2_data_i;
+
+
+assign imm_instr_addr_o         = immediate_val[31:0];
 
 // // register_file.sv instantiate:
 // register_file register_file(

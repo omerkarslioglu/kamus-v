@@ -1,13 +1,13 @@
 module kamus_EX(
     input instr_decoded_t instr_i,
-    input logic [31:0] rs1_value_i,
-    input logic [31:0] rs2_value_i,
+    input logic [31:0] rs1_data_i,
+    input logic [31:0] rs2_data_i,
 
     output logic [5:0] operation_exmem__reg_o,
     output logic [31:0] ex_o
 );
 
-assign ex_o                         = execute(instr_i, rs1_value_i, rs2_value_i);
+assign ex_o                         = execute(instr_i, rs1_data_i, rs2_data_i);
 assign operation_exmem__reg_o       = instr_i.operation;     
 
 
