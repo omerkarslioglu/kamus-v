@@ -3,12 +3,12 @@ module kamus_EX(
     input logic [31:0] rs1_value_i,
     input logic [31:0] rs2_value_i,
 
+    output logic [5:0] operation_exmem__reg_o,
     output logic [31:0] ex_o
 );
 
-always_comb begin
-    ex_o = execute(instr_i, rs1_value_i, rs2_value_i);
-end
+assign ex_o                         = execute(instr_i, rs1_value_i, rs2_value_i);
+assign operation_exmem__reg_o       = instr_i.operation;     
 
 
 function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_value, logic [31:0] rs2_value);
@@ -25,13 +25,6 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
     unique case (instr.operation)
         ADD, LW, LH, LHU, LB, LBU, SW, SB, SH:
             return rs1_value + rs2_value_or_imm;
-            // unique case (variable)
-            //     ADD, LW, SW:    return ex_buff;
-            //     LH, SH:         return {16{ex_buff[15]}, ex_buff[15:0]};
-            //     LHU:            return {16{1'b0}, ex_buff[15:0]};
-            //     LB, SB:         return {8{ex_buff[7]}, ex_buff[7:0]};
-            //     LBU:            return {8{1'b0}, ex_buff[7:0]};
-            // endcase
         SUB:    return rs1_value - rs2_value;
         SLT:    return $signed(rs1_value) < $signed(rs2_value_or_imm);
         SLTU:   return rs1_value < rs2_value_or_imm;

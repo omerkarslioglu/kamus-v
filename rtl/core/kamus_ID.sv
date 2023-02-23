@@ -101,7 +101,10 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                 F3_LBU:    return LBU;
                 F3_LHU:    return LHU;
             endcase
-        S_TYPE[6:2]:    return STORE;
+        S_TYPE[6:2]: 
+                F3_SW:      return SW;
+                F3_SH:      return SH;
+                F3_SB:      return SB;
         ALU_I_TYPE, ALU_TYPE:
             unique case (funct3)
                 // there is no SUBI instruction so also check opcode
