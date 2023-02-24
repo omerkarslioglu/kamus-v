@@ -93,13 +93,15 @@ kamus_EX kamus_EX_sub(
     .instr_i            (instr_idex_q),
     .rs1_data_i         (rs1_data_idex_q),
     .rs2_data_i         (rs2_data_idex_q),
+    .operation_o        (operation_exmem_d),
+    .ex_o               (ex_rslt_exmem_d),
+
+     // Buffered Connections Data&Addr:
     .rd_addr_i          (rd_addr_idex_q),
     .rs2_data_o         (rs2_data_exmem_d),
     .rd_addr_o          (rd_addr_exmem_d),
-    .operation_o        (operation_exmem_d),
-    .ex_o               (ex_rslt_exmem_d)
 
-    // Buffered Connections:
+    // Buffered Connections Control Signals:
     .l1d_wr_en_i        (l1d_wr_en_idex_q),
     .regfile_wr_en_i    (regfile_wr_en_idex_q),
     .wb_mux_sel_i       (wb_mux_sel_idex_q),
@@ -149,11 +151,11 @@ register_file(
 // IF/ID FlipFLop
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
-        instr_data_ifid_q               <= 32'b0;
-        instr_addr_ifid_q               <= 32'b0;
-    end else begin          
-        instr_data_ifid_q               <= instr_data_ifid_d;
-        instr_addr_ifid_q               <= l1i_instr_addr_o;
+        instr_data_ifid_q                   <= 32'b0;
+        instr_addr_ifid_q                   <= 32'b0;
+    end else begin              
+        instr_data_ifid_q                   <= instr_data_ifid_d;
+        instr_addr_ifid_q                   <= l1i_instr_addr_o;
     end
 end
 
@@ -179,16 +181,9 @@ end
 // EX/MEM FlipFlop
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
-        operation_exmem_q                   <= 5'b0;
-        ex_rslt_exmem_q                     <= 32'b0;
+        
     end else begin
-        operation_exmem_q                   <= operation_exmem_d;
-        ex_rslt_exmem_q                     <= ex_rslt_exmem_d;
-        rs2_data_exmem_q                    <= rs2_data_exmem_d;
-        rd_addr_exmem_q                     <= rd_addr_exmem_d;
-        l1d_wr_en_exmem_q                   <= l1d_wr_en_exmem_d;
-        regfile_wr_en_exmem_q               <= regfile_wr_en_exmem_d;
-        wb_mux_sel_exmem_q                  <= wb_mux_sel_exmem_d;
+
     end
 end
 
