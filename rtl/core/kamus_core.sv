@@ -6,6 +6,12 @@ module kamus_core(
     // Interface with $L1I
     input logic [31:0]  l1i_instr_data_i,
     output logic [31:0] l1i_instr_addr_o,
+
+    // Interface with $L1D
+    input logic [31:0] l1d_rd_data_i,
+    output logic l1d_wr_en_o,
+    output logic [31:0] l1d_addr_o,
+    output logic [31:0] l1d_wr_data_o
 );
 
 // IF/ID FlipFlop IOs
@@ -114,14 +120,14 @@ kamus_MEM kamus_MEM_sub(
     .clk_i              (clk_i), 
     .rst_ni             (rst_ni),
     // EX stage interface (prev. stage)
-    .rs2_data_i         (rs2_data_exmem_q),                      // rs2 values: ID(gen)->EX(buff)->MEM(used) (when store command taken)
-    .ex_rslt_i          (ex_rslt_exmem_q),                        // ALU rslt: EX(gen)->MEM(used)
-    .rd_addr_i          (rd_addr_exmem_q),                        // rd address input: ID(gen)->EX(buff)->MEM(buff)->WB(used)
+    .rs2_data_i         (rs2_data_exmem_q),                         // rs2 values: ID(gen)->EX(buff)->MEM(used) (when store command taken)
+    .ex_rslt_i          (ex_rslt_exmem_q),                          // ALU rslt: EX(gen)->MEM(used)
+    .rd_addr_i          (rd_addr_exmem_q),                          // rd address input: ID(gen)->EX(buff)->MEM(buff)->WB(used)
     .operation_i        (operation_exmem_q),
         // comes from EX but they are related with Control Unit:
-    .l1d_wr_en_i        (l1d_wr_en_exmem_q),                    // from exmem ff
-    .regfile_wr_en_i    (regfile_wr_en_exmem_q),            // from exmem ff
-    .wb_mux_sel_i       (wb_mux_sel_exmem_q),                  // from exmem ff
+    .l1d_wr_en_i        (l1d_wr_en_exmem_q),                        // from exmem ff
+    .regfile_wr_en_i    (regfile_wr_en_exmem_q),                    // from exmem ff
+    .wb_mux_sel_i       (wb_mux_sel_exmem_q),                       // from exmem ff
 
     // WB stage interface (next stage)
     .regfile_wr_en_o,  
@@ -130,10 +136,10 @@ kamus_MEM kamus_MEM_sub(
     .wb_mux_sel_o,
     .rd_addr_o,                 // rd address output:  ID(gen)->EX(buff)->MEM(buff)->WB(used)
     // $L1D Interface
-    .l1d_rd_data_i,          
-    .l1d_wr_en_o,                // comes from from kamus_EX
-    .l1d_addr_o,                 // comes from from kamus_EX
-    .l1d_wr_data_o
+    .l1d_rd_data_i      (l1d_rd_data_i),          
+    .l1d_wr_en_o        (l1d_wr_en_o),                // comes from from kamus_EX
+    .l1d_addr_o         (l1d_addr_o),                 // comes from from kamus_EX
+    .l1d_wr_data_o      (l1d_wr_data_o)
 );
 
 register_file(
@@ -181,7 +187,7 @@ end
 // EX/MEM FlipFlop
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
-        
+
     end else begin
 
     end
