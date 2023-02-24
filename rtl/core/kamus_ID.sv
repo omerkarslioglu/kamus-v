@@ -16,7 +16,6 @@ module kamus_ID #(
     // Interface between IF-ID stages
     input logic [31:0]          instr_i,
     input logic [31:0]          instr_addr_i,       // comes from fetch stage: kamus_IF (instr_addr)
-    output logic [31:0]          imm_instr_addr_o; 
     
     // Interface between ID-EX stages
     output instr_decoded_t      instr_o,
@@ -56,9 +55,6 @@ assign instr_o.operation        = decode_opcode(instr_i);
 assign immediate_val            = decode_immediate(instr_i);
 assign rs1_data_o               = rs1_data_i;
 assign rs2_data_o               = rs2_data_i;
-
-
-assign imm_instr_addr_o         = immediate_val[31:0];
 
 // // register_file.sv instantiate:
 // register_file register_file(
