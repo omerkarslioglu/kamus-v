@@ -152,7 +152,9 @@ typedef enum logic [2:0] {
     F3_ADDSUB = 3'b000,
     F3_SLT    = 3'b010,
     F3_SLTU   = 3'b011,
-    F3_XOR   BGE  = 3'b111,
+    F3_XOR    = 3'b100,
+    F3_OR     = 3'b110,
+    F3_AND    = 3'b111,
     F3_SLL    = 3'b001,
     F3_SR     = 3'b101
 } funct3_op_e;

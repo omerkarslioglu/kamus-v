@@ -1,7 +1,7 @@
 module register_file(
     input logic clk_i, rst_ni,
 
-    input logic reg_wr_en,
+    input logic reg_wr_en_i,
 
     input logic rs1_addr_i,         // source1 register addr
     input logic rs2_addr_i,         // source2 register addr
@@ -23,7 +23,7 @@ always_ff @(posedge clk_i) begin
             registers[i] <= 32'b0;
         end
     end else begin
-        if(reg_wr_en) registers[rd_addr_i] <= wr_data_i;
+        if(reg_wr_en_i) registers[rd_addr_i] <= wr_data_i;
     end
 end
 
