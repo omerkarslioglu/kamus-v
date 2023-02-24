@@ -26,12 +26,12 @@ module kamus_MEM(
     // EX stage interface (prev. stage)
     input logic [31:0]      rs2_data_exmem_reg_i,       // rs2 values comes from kamus_EX (regfile) (when store command taken)
     input logic [31:0]      alu_rslt_exmem_reg_i,       // comes from kamus_EX (ALU)
+    input logic [4:0]       rd_addr_exmem_reg_i,
+    input logic [4:0]       operation_exmem__reg_i,
         // comes from EX but they are related with Control Unit:
     input logic             l1d_wr_en_exmem_reg_i,      // comes from  kamus_EX (control unit)
     input logic             regfile_wr_en_exmem_reg_i,
     input logic [1:0]       wb_mux_sel_exmem_reg_i,
-    input logic [4:0]       rd_addr_exmem_reg_i,
-    input logic [4:0]       operation_exmem__reg_i, 
 
     // WB stage interface (next stage)
     output logic            regfile_wr_en_memwb_reg_o,  
@@ -55,7 +55,7 @@ assign l1d_wr_data_o        = lsu_data_buff;
 
 // LSU
 always_comb begin
-    unique case (operation_exmem__reg_o)
+    unique case (operation_exmem__reg_i)
         LW:         lsu_data_buff = l1d_rd_data_i;
         LH:         lsu_data_buff = {16{l1d_rd_data_i[15]}, l1d_rd_data_i[15:0]};
         LB:         lsu_data_buff = {24{l1d_rd_data_i[7]}, l1d_rd_data_i[7:0]};

@@ -9,9 +9,9 @@ module kamus_core(
 );
 
 // IF/ID FlipFlop IOs
-logic [31:0]    instr_data_IFID_reg_d;
-logic [31:0]    instr_data_IFID_reg_q;
-logic [31:0]    instr_addr_IFID_reg_q;
+logic [31:0]    instr_data_ifid_d;
+logic [31:0]    instr_data_ifid_q;
+logic [31:0]    instr_addr_ifid_q;
 
 // ID-RegFile Wires
 logic [31:0]    rs1_data_wire;
@@ -28,6 +28,13 @@ logic [31:0]    rs2_data_idex_q;
 logic [31:0]    rs1_data_idex_d;
 logic [31:0]    rs2_data_idex_d;
 
+// EX/MEM FlipFlop IOs
+logic [4:0]     operation_exmem_d;
+logic [4:0]     operation_exmem_q;
+logic [31:0]    ex_rslt_exmem_d;
+logic [31:0]    ex_rslt_exmem_q;
+
+
 kamus_IF #(
     BOOT_ADDR = 32'h0
 )
@@ -39,7 +46,7 @@ kamus_IF_sub
     .instr_imm_addr_i(),                        // comes from ID (for jump and branch)
     .instr_addr_sel_i(),                        // for pc value selector mux (according to jal, branch etc.)
 
-    .instr_data_o(instr_data_IFID_reg_d),       // just wire that connected to ID
+    .instr_data_o(instr_data_ifid_d),           // just wire that connected to ID
     .instr_addr_o(l1i_instr_addr_o)             // instr_addr = pc
 );
 
@@ -50,8 +57,8 @@ kamus_ID_sub
 (
     .clk_i(clk_i), 
     .rst_ni(rst_ni),
-    .instr_i(instr_data_IFID_reg_q),
-    .instr_addr_i(instr_addr_IFID_reg_q),       // comes from fetch stage: kamus_IF (instr_addr)
+    .instr_i(instr_data_ifid_q),
+    .instr_addr_i(instr_addr_ifid_q),           // comes from fetch stage: kamus_IF (instr_addr)
     .imm_instr_addr_o()                         // kafam yandı arkadaş j-type lara dikkat
     .instr_o(instr_idex_d),
     .rs1_data_o(rs1_data_idex_d),
@@ -71,8 +78,8 @@ kamus_EX kamus_EX_sub(
     .rs1_data_i(rs1_data_idex_q),
     .rs2_data_i(rs2_data_idex_q),
 
-    .operation_exmem__reg_o(),
-    .ex_o()
+    .operation_o(operation_exmem_d),
+    .ex_o(ex_rslt_exmem_d)
 );
 
 register_file(
@@ -90,11 +97,11 @@ register_file(
 // IF/ID FlipFLop
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
-        instr_data_IFID_reg_q               <= 32'b0;
-        instr_addr_IFID_reg_q               <= 32'b0;
+        instr_data_ifid_q               <= 32'b0;
+        instr_addr_ifid_q               <= 32'b0;
     end else begin          
-        instr_data_IFID_reg_q               <= instr_data_IFID_reg_d;
-        instr_addr_IFID_reg_q               <= l1i_instr_addr_o;
+        instr_data_ifid_q               <= instr_data_ifid_d;
+        instr_addr_ifid_q               <= l1i_instr_addr_o;
     end
 end
 
@@ -114,6 +121,17 @@ always_ff @(posedge clk_i) begin
         instr_idex_q                        <= instr_idex_d;
         rs1_data_idex_q                     <= rs1_data_idex_d;
         rs1_data_idex_q                     <= rs1_data_idex_d;
+    end
+end
+
+// EX/MEM FlipFlop
+always_ff @(posedge clk_i) begin
+    if(~rst_ni) begin
+        operation_exmem_q                   <= 5'b0;
+        ex_rslt_exmem_q                     <= 32'b0;
+    end else begin
+        operation_exmem_q                   <= operation_exmem_d;
+        ex_rslt_exmem_q                     <= ex_rslt_exmem_d;
     end
 end
 
