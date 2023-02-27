@@ -10,7 +10,7 @@ module kamus_WB(
     input logic [31:0]      l1d_rd_data_i,          // the data1 that will be saved to regFile (and in MEM/WB register)
     input logic [1:0]       wb_mux_sel_i,
     input logic [4:0]       rd_addr_i,
-
+    input logic [31:0]      next_pc_i,              // comes from IF(generated)->buffered->WB(used)
     // WB-RegFile Interface
     output logic            regfile_wr_en_o,
     output logic [4:0]      rd_addr_o,
@@ -22,9 +22,10 @@ assign rd_addr_o              = rd_addr_i;
 
 always_comb begin
     case(wb_mux_sel_i)
-        ALU_RESULT: wb_data_o   = ex_rslt_i;
-        MEM_RESULT: wb_data_o   = l1d_rd_data_i;
-        default:    wb_data_o   = 32'b0;
+        ALU_RESULT  :   wb_data_o   = ex_rslt_i;
+        MEM_RESULT  :   wb_data_o   = l1d_rd_data_i;
+        NEXT_PC     :   wb_data_o   = next_pc_i;
+        default:        wb_data_o   = 32'b0;
     endcase
 end
 

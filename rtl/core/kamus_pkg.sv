@@ -17,13 +17,15 @@ typedef enum logic [4:0] {
 enum bit [2:0] {
     PC4_ST, // PC+4 state
     PC_ST,  // PC state for state
-    B_ST,
-    J_ST
+    //B_ST,
+    //J_ST
+    ALU_ST // J&B states
 }instr_addr_sel_state_e;
 
 typedef enum logic [1:0]{
     ALU_RESULT  = 2'b00;
     MEM_RESULT  = 2'b01;
+    NEXT_PC     = 2'b10;
 } wb_options_e;
 
 // memory operation widths
@@ -38,6 +40,7 @@ typedef struct packed {
     instr_addr_sel_state_e  instr_addr_state;
     wb_mux_sel_i            wb_sel;
     logic                   l1d_wr_en;
+    logic                   regfile_wr_en;
 }control_unit_t;
 
 // ID - EX interface

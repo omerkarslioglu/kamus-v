@@ -14,7 +14,8 @@ module kamus_IF
     input logic [2:0]   instr_addr_sel_i,       // for pc value selector mux (according to jal, branch etc.)
     
     output logic [31:0] instr_data_o,           // just wire that connected to ID
-    output logic [31:0] instr_addr_o            // instr_addr = pc
+    output logic [31:0] instr_addr_o,           // instr_addr = target pc (for $l1i)
+    output logic [31:0] next_pc_o               // next = pc+4
 );
 
 logic [31:0] pc_next;
@@ -25,11 +26,11 @@ instr_addr_sel_state_e instr_addr_sel;
 assign instr_data_o = instr_data_i;
 assign instr_addr_sel <= instr_addr_sel_i;
 
-always_comb @(posedge clk_i) begin
+always_comb begin
     case(instr_addr_sel)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
-        B_ST:       instr_addr_o = pc_curr + instr_imm_addr_i;
+        //B_ST:       instr_addr_o = pc_curr + instr_imm_addr_i;
         J_ST:       instr_addr_o = instr_imm_addr_i; // WILL BE UPDATED, LINK PC+4 to X1 or X5 MUST BE NEED ?
         default:    instr_addr_o = pc_next;
     endcase

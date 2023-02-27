@@ -13,6 +13,9 @@ module kamus_EX(
     input logic [4:0]           rd_addr_i,
     output logic [4:0]          rd_addr_o,
     output logic [31:0]         rs2_data_o,
+    input logic [31:0]          next_pc_i,
+    output logic [31:0]         next_pc_o,
+
     // Buffered Control Signals:
     input logic                 l1d_wr_en_i,  
     input logic                 regfile_wr_en_i,
@@ -22,13 +25,14 @@ module kamus_EX(
     output logic [1:0]          wb_mux_sel_o
 );
 
-assign ex_o                         = execute(instr_i, rs1_data_i, rs2_data_i);
-assign operation_o                  = instr_i.operation;
-assign rs2_data_o                   = rs2_data_i;
-assign rd_addr_o                    = rd_addr_i;
-assign l1d_wr_en_o                  = l1d_wr_en_i;
-assign regfile_wr_en_o              = regfile_wr_en_i;
-assign wb_mux_sel_o                 = wb_mux_sel_i;
+assign ex_o                     = execute(instr_i, rs1_data_i, rs2_data_i);
+assign operation_o              = instr_i.operation;
+assign rs2_data_o               = rs2_data_i;
+assign rd_addr_o                = rd_addr_i;
+assign l1d_wr_en_o              = l1d_wr_en_i;
+assign regfile_wr_en_o          = regfile_wr_en_i;
+assign wb_mux_sel_o             = wb_mux_sel_i;
+assign next_pc_o                = next_pc_i;
 
 function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_value, logic [31:0] rs2_value);
     logic [31:0] rs2_value_or_imm = instr.immediate_used ? instr.immediate : rs2_value;
@@ -43,22 +47,28 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
 
     unique case (instr.operation)
         ADD, LW, LH, LHU, LB, LBU, SW, SB, SH:
-                return rs1_value + rs2_value_or_imm;
-        SUB:    return rs1_value - rs2_value;
-        SLT:    return $signed(rs1_value) < $signed(rs2_value_or_imm);
-        SLTU:   return rs1_value < rs2_value_or_imm;
-        XOR:    return rs1_value ^ rs2_value_or_imm;
-        OR:     return rs1_value | rs2_value_or_imm;
-        AND:    return rs1_value & rs2_value_or_imm;
-        SL:     return rs1_value << shift_amount;
-        SRL:    return rs1_value >> shift_amount;
-        SRA:    return $signed(rs1_value) >>> shift_amount;
-        LUI:    return instr.immediate;
-        AUIPC:  return instr.immediate + instr.pc;
+                    return rs1_value + rs2_value_or_imm;
+        SUB:        return rs1_value - rs2_value;
+        SLT:        return $signed(rs1_value) < $signed(rs2_value_or_imm);
+        SLTU:       return rs1_value < rs2_value_or_imm;
+        XOR:        return rs1_value ^ rs2_value_or_imm;
+        OR:         return rs1_value | rs2_value_or_imm;
+        AND:        return rs1_value & rs2_value_or_imm;
+        SL:         return rs1_value << shift_amount;
+        SRL:        return rs1_value >> shift_amount;
+        SRA:        return $signed(rs1_value) >>> shift_amount;
+        LUI:        return instr.immediate;
+        AUIPC:      return instr.immediate + instr.pc;
         // JAL(R) stores the address of the instruction that followed the jump
-        JAL, JALR: return instr.pc + 4; // next instr
-        CSRRW, CSRRS, CSRRC: return read_csr(csr_e'(instr.funct12));
-        default: return 'x;
+        //JAL, JALR: return next_pc_i; // next instr
+        JAL, BEQ, BNE, BLT, BGE, BLTU, BGEU: 
+                    return instr.pc + instr.immediate;
+        JALR:       return (rs1_value + instr.immediate) & 32'h_ff_ff_ff_fe; // set LSB to 0
+        FENCE_I:    return next_pc_i;
+        CSRRW, CSRRS, CSRRC: 
+                    return read_csr(csr_e'(instr.funct12));
+        
+        default:    return 'x;
     endcase
 endfunction
 
@@ -89,6 +99,20 @@ function automatic logic [31:0] read_csr(csr_e csr_addr);
             CYCLEH, TIMEH: return cycles[63:32];
             default:   return 'x;
         endcase
+endfunction
+
+function automatic logic is_branch_taken(operation_t operation, logic [31:0] rs1_value, logic [31:0] rs2_value);
+unique case (operation)
+    BEQ:  return rs1_value == rs2_value;
+    BNE:  return rs1_value != rs2_value;
+    BGEU: return rs1_value >= rs2_value;
+    BLTU: return rs1_value <  rs2_value;
+    BGE:  return $signed(rs1_value) >= $signed(rs2_value);
+    BLT:  return $signed(rs1_value) <  $signed(rs2_value);
+    // we implement fence.i (sync instruction and data memory) by doing a branch to reload the next instruction
+    JAL, JALR, FENCE_I, MRET: return '1;
+    default: return '0;
+endcase
 endfunction
 
 endmodule
