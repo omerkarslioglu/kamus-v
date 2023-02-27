@@ -1,3 +1,7 @@
+/* -- The Components Connected to Control Unit
+1-) wb MUX (wb_mux_sel_i)
+*/
+
 import kamus_pkg::wb_options_e;
 
 module kamus_WB(

@@ -20,6 +20,10 @@
 
 //import kamus_pkg::*;
 
+/* -- The Components Connected to Control Unit
+UNVALID
+*/
+
 module kamus_MEM(
     input clk_i, rst_ni,
 
@@ -35,8 +39,8 @@ module kamus_MEM(
 
     // WB stage interface (next stage)
     output logic            regfile_wr_en_o,  
-    output logic [31:0]     ex_rslt_o,            // the data0 that will be saved to regFile (and in MEM/WB register)
-    output logic [31:0]     l1d_rd_data_o,    // the data1 that will be saved to regFile (and in MEM/WB register)
+    output logic [31:0]     ex_rslt_o,                  // the data0 that will be saved to regFile (and in MEM/WB register)
+    output logic [31:0]     l1d_rd_data_o,              // the data1 that will be saved to regFile (and in MEM/WB register)
     output logic [1:0]      wb_mux_sel_o,
     output logic [4:0]      rd_addr_o,
     

@@ -13,12 +13,32 @@ typedef enum logic [4:0] {
     t3, t4, t5, t6
 } register_e;
 
+// Instruction Address Selection States:
+enum bit [2:0] {
+    PC4_ST, // PC+4 state
+    PC_ST,  // PC state for state
+    B_ST,
+    J_ST
+}instr_addr_sel_state_e;
+
+typedef enum logic [1:0]{
+    ALU_RESULT  = 2'b00;
+    MEM_RESULT  = 2'b01;
+} wb_options_e;
+
 // memory operation widths
 typedef enum logic [1:0] {
     B = 2'b00,
     H = 2'b01,
     W = 2'b10
 } mem_width_e;
+
+// Control Unit - Output
+typedef struct packed {
+    instr_addr_sel_state_e  instr_addr_state;
+    wb_mux_sel_i            wb_sel;
+    logic                   l1d_wr_en;
+}control_unit_t;
 
 // ID - EX interface
 typedef struct packed {
@@ -212,10 +232,5 @@ typedef enum logic [11:0] {
     F12_MRET   = 12'b001100000010,
     F12_WFI    = 12'b000100000101
 } funct12_t;
-
-typedef enum logic [1:0]{
-    ALU_RESULT  = 2'b00;
-    MEM_RESULT  = 2'b01;
-} wb_options_e;
 
 endpackage

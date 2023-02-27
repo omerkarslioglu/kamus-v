@@ -1,3 +1,7 @@
+/* -- The Components Connected to Control Unit
+UNVALID
+*/
+
 module kamus_EX(
     input instr_decoded_t       instr_i,
     input logic [31:0]          rs1_data_i,
@@ -39,7 +43,7 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
 
     unique case (instr.operation)
         ADD, LW, LH, LHU, LB, LBU, SW, SB, SH:
-            return rs1_value + rs2_value_or_imm;
+                return rs1_value + rs2_value_or_imm;
         SUB:    return rs1_value - rs2_value;
         SLT:    return $signed(rs1_value) < $signed(rs2_value_or_imm);
         SLTU:   return rs1_value < rs2_value_or_imm;

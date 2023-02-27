@@ -5,6 +5,11 @@
     -  Think that ID covers to the register file
     --
 */
+
+
+/* -- The Components Connected to Control Unit
+UNVALID
+*/
 `include "kamus_pkg.svh"
 import kamus_pkg::*;
 

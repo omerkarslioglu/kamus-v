@@ -1,8 +1,14 @@
+/* -- The Components Connected to Control Unit
+1-)  instruction address selection/pc MUX
+*/
+import kamus_pkg::*;
+
 module kamus_IF
 #(
     parameter logic [31:0] BOOT_ADDR = 32'h0;
 )(
-    input clk_i, rst_ni,
+    input logic clk_i, rst_ni,
+    input logic flush_i,
     input logic [31:0]  instr_data_i,           // comes from $L1I
     input logic [31:0]  instr_imm_addr_i,       // comes from ID (for jump and branch)
     input logic [2:0]   instr_addr_sel_i,       // for pc value selector mux (according to jal, branch etc.)
@@ -15,13 +21,6 @@ logic [31:0] pc_next;
 logic [31:0] pc_curr;
 
 instr_addr_sel_state_e instr_addr_sel;
-
-enum bit [2:0] {
-    PC4_ST, // PC+4 state
-    PC_ST, // PC state for state
-    B_ST,
-    J_ST
-}instr_addr_sel_state_e;
 
 assign instr_data_o = instr_data_i;
 assign instr_addr_sel <= instr_addr_sel_i;
@@ -41,8 +40,13 @@ always @(posedge clk_i) begin
         pc_curr <= BOOT_ADDR;
         pc_next <= BOOT_ADDR;
     end else begin
-        pc_curr <= pc_next;
-        pc_next <= pc_next + 32'h4;
+        if(~flush_i) begin
+            pc_curr <= pc_next;
+            pc_next <= pc_next + 32'h4;
+        end else begin
+            pc_curr <= pc_curr;
+            pc_next <= pc_next;
+        end
     end
 end
 
