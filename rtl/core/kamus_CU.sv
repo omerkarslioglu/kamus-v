@@ -10,17 +10,17 @@ module kamus_CU(
 
 always_comb begin
     unique case(control_unit_i.operation)
-    JAL, JALR:
-        control_unit_o.instr_addr_state     = J_ST;
-        control_unit_o.wb_sel               = ALU_RESULT;
-        control_unit_o.l1d_wr_en            = 1'b0;
-        control_unit_o.regfile_wr_en        = 1'b1;
+    // JAL, JALR:
+    //     control_unit_o.instr_addr_state     = J_ST;
+    //     control_unit_o.wb_sel               = ALU_RESULT;
+    //     control_unit_o.l1d_wr_en            = 1'b0;
+    //     control_unit_o.regfile_wr_en        = 1'b1;
 
-    BEQ, BNE, BLT, BGE, BLTU, BGEU:
-        control_unit_o.instr_addr_state     = B_ST;
-        control_unit_o.wb_sel               = ?????????;
-        control_unit_o.l1d_wr_en            = 1'b0;
-        control_unit_o.regfile_wr_en        = 1'b0;
+    // BEQ, BNE, BLT, BGE, BLTU, BGEU:
+    //     control_unit_o.instr_addr_state     = B_ST;
+    //     control_unit_o.wb_sel               = ALU_RESULT;
+    //     control_unit_o.l1d_wr_en            = 1'b0;
+    //     control_unit_o.regfile_wr_en        = 1'b0;
 
     SW, SH, SB:
         control_unit_o.instr_addr_state     = PC_ST;
