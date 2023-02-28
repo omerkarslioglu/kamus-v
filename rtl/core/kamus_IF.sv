@@ -9,12 +9,18 @@ module kamus_IF
 )(
     input logic clk_i, rst_ni,
     input logic flush_i,
-    input logic [31:0]  instr_data_i,           // comes from $L1I
-    input logic [31:0]  instr_imm_addr_i,       // comes from ID (for jump and branch)
+
+    // WB-IF Interface:
+    input logic [31:0]  ex_rslt_i,              // comes from EX->buffered->IF (for jump and branch)
+    input logic         is_branch_taken_i,
     input logic [2:0]   instr_addr_sel_i,       // for pc value selector mux (according to jal, branch etc.)
     
-    output logic [31:0] instr_data_o,           // just wire that connected to ID
+    // L1I Interface:
+    input logic [31:0]  instr_data_i,           // comes from $L1I
     output logic [31:0] instr_addr_o,           // instr_addr = target pc (for $l1i)
+    
+    // IF-ID Interface:
+    output logic [31:0] instr_data_o,           // just wire that connected to ID
     output logic [31:0] next_pc_o               // next = pc+4
 );
 
@@ -27,12 +33,12 @@ assign instr_data_o = instr_data_i;
 assign instr_addr_sel <= instr_addr_sel_i;
 
 always_comb begin
-    case(instr_addr_sel)
+    unique case(instr_addr_sel)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
-        //B_ST:       instr_addr_o = pc_curr + instr_imm_addr_i;
-        J_ST:       instr_addr_o = instr_imm_addr_i; // WILL BE UPDATED, LINK PC+4 to X1 or X5 MUST BE NEED ?
-        default:    instr_addr_o = pc_next;
+        //B_ST:       instr_addr_o = (is_branch_taken_i)? ex_rslt_i : pc_curr;
+        //J_ST:       instr_addr_o = ex_rslt_i;
+        default:    instr_addr_o = pc_curr;
     endcase
 end
 

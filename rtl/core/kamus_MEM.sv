@@ -33,6 +33,7 @@ module kamus_MEM(
     input logic [4:0]       rd_addr_i,
     input logic [4:0]       operation_i,
     input logic [31:0]      next_pc_i,
+    input logic             is_branch_taken_i,
         // comes from EX but they are related with Control Unit:
     input logic             l1d_wr_en_i,                // comes from  kamus_EX (control unit)
     input logic             regfile_wr_en_i,            // from exmem ff
@@ -45,6 +46,7 @@ module kamus_MEM(
     output logic [1:0]      wb_mux_sel_o,
     output logic [4:0]      rd_addr_o,
     output logic [31:0]     next_pc_o,
+    output logic            is_branch_taken_o,
     
     // $L1D Interface
     input logic [31:0]      l1d_rd_data_i,          
@@ -55,10 +57,19 @@ module kamus_MEM(
 
 logic [31:0] lsu_data_buff;                             // it was designed for WORD-HALFWORD-BYTE store and load options
 
-assign l1d_wr_en_o              = l1d_wr_en_i; 
-assign l1d_addr_o               = ex_rslt_i;
-assign l1d_wr_data_o            = lsu_data_buff;
-assign next_pc_o                = next_pc_i;
+assign l1d_wr_en_o                  = l1d_wr_en_i; 
+assign l1d_addr_o                   = ex_rslt_i;
+assign l1d_wr_data_o                = lsu_data_buff;
+assign next_pc_o                    = next_pc_i;
+
+
+// MEM/WB Register Inputs:
+assign regfile_wr_en_o              = regfile_wr_en_i;
+assign ex_rslt_o                    = ex_rslt_i;
+assign l1d_rd_data_o                = lsu_data_buff; 
+assign wb_mux_sel_o                 = wb_mux_sel_i;
+assign rd_addr_o                    = rd_addr_i;
+assign is_branch_taken_o            = is_branch_taken_i;
 
 // LSU
 always_comb begin
@@ -74,16 +85,5 @@ always_comb begin
         default:    lsu_data_buff       = 32'b0;
     endcase
 end
-
-/*
-    MEM/WB Register Inputs:
-*/
-
-assign regfile_wr_en_o              = regfile_wr_en_i;
-assign ex_rslt_o                    = ex_rslt_i;
-assign l1d_rd_data_o                = lsu_data_buff; 
-assign wb_mux_sel_o                 = wb_mux_sel_i;
-assign rd_addr_o                    = rd_addr_i;    
-
 
 endmodule

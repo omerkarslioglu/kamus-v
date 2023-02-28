@@ -6,7 +6,6 @@
     --
 */
 
-
 /* -- The Components Connected to Control Unit
 UNVALID
 */
@@ -174,7 +173,6 @@ function automatic logic validate_csr_op(logic write, csr_e csr);
     endcase
 
 endfunction
-
 
 // sign extended decoded
 function automatic logic [32:0] decode_immediate(logic [31:0] instr);

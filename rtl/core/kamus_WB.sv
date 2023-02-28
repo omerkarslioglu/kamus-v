@@ -11,14 +11,22 @@ module kamus_WB(
     input logic [1:0]       wb_mux_sel_i,
     input logic [4:0]       rd_addr_i,
     input logic [31:0]      next_pc_i,              // comes from IF(generated)->buffered->WB(used)
+    input logic             is_branch_taken_i,
+
+    // WB-IF Interface
+    output logic            is_branch_taken_o,
+    output logic [31:0]     ex_rslt_o,
+    
     // WB-RegFile Interface
     output logic            regfile_wr_en_o,
     output logic [4:0]      rd_addr_o,
     output logic [31:0]     wb_data_o
 );
 
-assign regfile_wr_en_o        = regfile_wr_en_i;
-assign rd_addr_o              = rd_addr_i;
+assign regfile_wr_en_o              = regfile_wr_en_i;
+assign rd_addr_o                    = rd_addr_i;
+assign is_branch_taken_o            = is_branch_taken_i;
+assign ex_rslt_o                    = ex_rslt_i;
 
 always_comb begin
     case(wb_mux_sel_i)

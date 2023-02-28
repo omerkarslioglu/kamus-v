@@ -8,6 +8,7 @@ module kamus_EX(
     input logic [31:0]          rs2_data_i,
     output logic [5:0]          operation_o,
     output logic [31:0]         ex_o,
+    output logic                is_branch_taken_o,
 
     // Buffered Connections Data&Addr:
     input logic [4:0]           rd_addr_i,
@@ -26,6 +27,7 @@ module kamus_EX(
 );
 
 assign ex_o                     = execute(instr_i, rs1_data_i, rs2_data_i);
+assign is_branch_taken_o        = is_branch_taken(instr_i.operation, rs1_data_i, rs2_data_i);
 assign operation_o              = instr_i.operation;
 assign rs2_data_o               = rs2_data_i;
 assign rd_addr_o                = rd_addr_i;
@@ -101,18 +103,18 @@ function automatic logic [31:0] read_csr(csr_e csr_addr);
         endcase
 endfunction
 
-function automatic logic is_branch_taken(operation_t operation, logic [31:0] rs1_value, logic [31:0] rs2_value);
-unique case (operation)
-    BEQ:  return rs1_value == rs2_value;
-    BNE:  return rs1_value != rs2_value;
-    BGEU: return rs1_value >= rs2_value;
-    BLTU: return rs1_value <  rs2_value;
-    BGE:  return $signed(rs1_value) >= $signed(rs2_value);
-    BLT:  return $signed(rs1_value) <  $signed(rs2_value);
-    // we implement fence.i (sync instruction and data memory) by doing a branch to reload the next instruction
-    JAL, JALR, FENCE_I, MRET: return '1;
-    default: return '0;
-endcase
+function automatic logic is_branch_taken(operation_e operation, logic [31:0] rs1_value, logic [31:0] rs2_value);
+    unique case (operation)
+        BEQ:  return rs1_value == rs2_value;
+        BNE:  return rs1_value != rs2_value;
+        BGEU: return rs1_value >= rs2_value;
+        BLTU: return rs1_value <  rs2_value;
+        BGE:  return $signed(rs1_value) >= $signed(rs2_value);
+        BLT:  return $signed(rs1_value) <  $signed(rs2_value);
+        // we implement fence.i (sync instruction and data memory) by doing a branch to reload the next instruction
+        JAL, JALR, FENCE_I, MRET: return '1;
+        default: return '0;
+    endcase
 endfunction
 
 endmodule
