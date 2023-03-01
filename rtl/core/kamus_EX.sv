@@ -65,7 +65,7 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
         LUI:        return instr.immediate;
         AUIPC:      return instr.immediate + instr.pc;
         // JAL(R) stores the address of the instruction that followed the jump
-        //JAL, JALR: return next_pc_i; // next instr
+        // JAL, JALR: return next_pc_i; // next instr
         JAL, BEQ, BNE, BLT, BGE, BLTU, BGEU: 
                     return instr.pc + instr.immediate;
         JALR:       return (rs1_value + instr.immediate) & 32'h_ff_ff_ff_fe; // set LSB to 0

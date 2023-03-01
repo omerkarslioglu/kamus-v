@@ -22,17 +22,18 @@ always_comb begin
         control_unit_o.l1d_wr_en            = 1'b0;
         control_unit_o.regfile_wr_en        = 1'b1;
 
-    // BEQ, BNE, BLT, BGE, BLTU, BGEU:
-    //     control_unit_o.instr_addr_state     = ;
-    //     control_unit_o.wb_sel               = ALU_RESULT;
-    //     control_unit_o.l1d_wr_en            = 1'b0;
-    //     control_unit_o.regfile_wr_en        = 1'b0;
-
-    SW, SH, SB:
-        control_unit_o.instr_addr_state     = PC_ST;
-        control_unit_o.wb_sel               = MEM_RESULT;
-        control_unit_o.l1d_wr_en            = 1'b1;
+    BEQ, BNE, BLT, BGE, BLTU, BGEU:
+        control_unit_o.instr_addr_state     = B_ST;
+        control_unit_o.wb_sel               = ALU_RESULT;
+        control_unit_o.l1d_wr_en            = 1'b0;
         control_unit_o.regfile_wr_en        = 1'b0;
+
+    LB, LH, LW:
+        control_unit_o.instr_addr_state     = PC_ST;
+        control_unit_o.wb_sel               = ALU_RESULT;
+        control_unit_o.l1d_wr_en            = 1'b0;
+        control_unit_o.regfile_wr_en        = 1'b1;
+
     
     default:    // flush and unexpected conditions
         control_unit_o.instr_addr_state     = PC_ST;
