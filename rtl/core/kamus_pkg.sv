@@ -17,9 +17,9 @@ typedef enum logic [4:0] {
 enum bit [2:0] {
     PC4_ST, // PC+4 state
     PC_ST,  // PC state for state
-    //B_ST,
-    //J_ST
-    ALU_ST // J&B states
+    B_ST,
+    J_ST
+    //ALU_ST // J&B states
 }instr_addr_sel_state_e;
 
 typedef enum logic [1:0]{
@@ -37,6 +37,7 @@ typedef enum logic [1:0] {
 
 // Control Unit - Output
 typedef struct packed {
+    operation_e             operation;
     instr_addr_sel_state_e  instr_addr_state;
     wb_mux_sel_i            wb_sel;
     logic                   l1d_wr_en;

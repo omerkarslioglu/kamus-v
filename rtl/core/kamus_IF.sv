@@ -36,8 +36,8 @@ always_comb begin
     unique case(instr_addr_sel)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
-        //B_ST:       instr_addr_o = (is_branch_taken_i)? ex_rslt_i : pc_curr;
-        //J_ST:       instr_addr_o = ex_rslt_i;
+        B_ST:       instr_addr_o = (is_branch_taken_i)? ex_rslt_i : pc_curr;
+        J_ST:       instr_addr_o = ex_rslt_i;
         default:    instr_addr_o = pc_curr;
     endcase
 end

@@ -18,22 +18,23 @@ module kamus_ID #(
     input logic clk_i, rst_ni,
 
     // Interface between IF-ID stages
-    input logic [31:0]          instr_i,
-    input logic [31:0]          instr_addr_i,       // comes from fetch stage: kamus_IF (instr_addr)
-    input logic [31:0]          next_pc_i,
+    input logic [31:0]              instr_i,
+    input logic [31:0]              instr_addr_i,       // comes from fetch stage: kamus_IF (instr_addr)
+    input logic [31:0]              next_pc_i,
 
     // Interface between ID-EX stages
-    output instr_decoded_t      instr_o,
-    output logic [31:0]         rs1_data_o,
-    output logic [31:0]         rs2_data_o,
-    output logic [31:0]         next_pc_o,
+    output instr_decoded_t          instr_o,
+    output logic [31:0]             rs1_data_o,
+    output logic [31:0]             rs2_data_o,
+    output logic [31:0]             next_pc_o,
+    output instr_addr_sel_state_e   instr_addr_sel_o,
     
     // -- RegisterFile Interface:
-    input logic [31:0]          rs1_data_i,
-    input logic [31:0]          rs2_data_i,
-    output logic [4:0]          rs1_addr_o,
-    output logic [4:0]          rs2_addr_o,
-    output logic [4:0]          rd_addr_o
+    input logic [31:0]              rs1_data_i,
+    input logic [31:0]              rs2_data_i,
+    output logic [4:0]              rs1_addr_o,
+    output logic [4:0]              rs2_addr_o,
+    output logic [4:0]              rd_addr_o
     // --
 
 );
@@ -63,24 +64,14 @@ assign rs1_data_o               = rs1_data_i;
 assign rs2_data_o               = rs2_data_i;
 assign next_pc_o                = next_pc_i;
 
-// // register_file.sv instantiate:
-// register_file register_file(
-//     .clk_i(clk_i), 
-//     .rst_ni(rst_ni),
-//     .rs1_addr_i(instr_i`rs1),           
-//     .rs2_addr_i(instr_i`rs2),    
-//     .rd_addr_i(instr_i`rd),            
-//     .wr_data_i(...),      
-//     .rs1_val_o(rs1_val_o),
-//     .rs2_val_o(rs2_val_o)
-// );
-
 // -- for register file interface
 assign rs1_addr_o               = instr_i`rs1;
 assign rs2_addr_o               = instr_i`rs2;
 assign rd_addr_o                = instr_i`rd;
 // --
 
+// -- Control Unit
+assign instr_addr_sel_o         =  // Control Unit Bağlı Olacak
 
 function automatic operation_e decode_opcode(logic [31:0] instr);
     logic [11:0] funct12 = instr`funct12;
