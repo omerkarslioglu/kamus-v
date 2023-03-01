@@ -37,7 +37,8 @@ typedef enum logic [1:0] {
 
 // Control Unit - Output
 typedef struct packed {
-    operation_e             operation;
+    //operation_e             operation;
+    instr_types_e           instr_type;
     instr_addr_sel_state_e  instr_addr_state;
     wb_mux_sel_i            wb_sel;
     logic                   l1d_wr_en;
