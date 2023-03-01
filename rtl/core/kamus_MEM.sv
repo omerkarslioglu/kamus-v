@@ -77,13 +77,13 @@ assign instr_addr_sel_o             = instr_addr_sel_i;
 always_comb begin
     unique case (operation_i)
         LW:         lsu_data_buff       = l1d_rd_data_i;
-        LH:         lsu_data_buff       = {16{l1d_rd_data_i[15]}, l1d_rd_data_i[15:0]};
-        LB:         lsu_data_buff       = {24{l1d_rd_data_i[7]}, l1d_rd_data_i[7:0]};
-        LHU:        lsu_data_buff       = {16{1'b1}, l1d_rd_data_i[15:0]};
-        LBU:        lsu_data_buff       = {24{1'b1}, l1d_rd_data_i[7:0]};
+        LH:         lsu_data_buff       = {{16{l1d_rd_data_i[15]}}, l1d_rd_data_i[15:0]};
+        LB:         lsu_data_buff       = {{24{l1d_rd_data_i[7]}}, l1d_rd_data_i[7:0]};
+        LHU:        lsu_data_buff       = {{16{1'b1}}, l1d_rd_data_i[15:0]};
+        LBU:        lsu_data_buff       = {{24{1'b1}}, l1d_rd_data_i[7:0]};
         SW:         lsu_data_buff       = rs2_data_i;
-        SH:         lsu_data_buff       = {16{rs2_data_i[15]}, rs2_data_i[15:0]};
-        SB:         lsu_data_buff       = {24{rs2_data_i[7]}, rs2_data_i[7:0]};
+        SH:         lsu_data_buff       = {{16{rs2_data_i[15]}}, rs2_data_i[15:0]};
+        SB:         lsu_data_buff       = {{24{rs2_data_i[7]}}, rs2_data_i[7:0]};
         default:    lsu_data_buff       = 32'b0;
     endcase
 end

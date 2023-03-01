@@ -108,7 +108,7 @@ instr_addr_sel_state_e  instr_addr_sel_wbif_q;
 
 
 kamus_IF #(
-    BOOT_ADDR = 32'h0
+    BOOT_ADDR = 32'b0
 )
 kamus_IF_sub
 (
@@ -176,7 +176,7 @@ kamus_EX kamus_EX_sub(
     .next_pc_i          (next_pc_idex_q),
     .next_pc_o          (next_pc_exmem_d),
 
-    // Buffered Connections Control Signals:
+    // Buffered Connections Control Wires:
     .instr_addr_sel_i   (instr_addr_sel_idex_q),
     .wb_mux_sel_i       (wb_mux_sel_idex_q),
     .l1d_wr_en_i        (l1d_wr_en_idex_q),
@@ -272,8 +272,8 @@ always_ff @(posedge clk_i) begin
         instr_idex_q.immediate_used         <= 1'b0;
         instr_idex_q.funcr12                <= 12'b0;
         instr_idex_q.pc                     <= 32'b0;
-        instr_idex_q.operation              <= 6'b0;
-        instr_idex_q.memory_width           <= 2'b0;
+        instr_idex_q.operation              <= INVALID;
+        instr_idex_q.memory_width           <= W;
         rs1_data_idex_q                     <= 32'b0;
         rs2_data_idex_q                     <= 32'b0;
         next_pc_idex_q                      <= 32'b0;

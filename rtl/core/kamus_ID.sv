@@ -77,7 +77,7 @@ assign rs2_addr_o                       = instr_i`rs2;
 assign rd_addr_o                        = instr_i`rd;
 
 // Control Unit Interface
-assign control_unit_input_o.instr_type  = instr`opcode;
+assign control_unit_input_o.instr_type  = instr_i[6:0];
 assign instr_addr_sel_o                 = control_unit_output_i.instr_addr_state;
 assign wb_mux_sel_o                     = control_unit_output_i.wb_sel;                        
 assign l1d_wr_en_o                      = control_unit_output_i.l1d_wr_en;
@@ -99,7 +99,7 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
         JAL_TYPE[6:2]:  return JAL;
         JALR_TYPE[6:2]: return JALR;
         B_TYPE[6:2]:
-            unique case (funct3)= instr_i[31:20];
+            unique case (funct3)
             // assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
             // assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
             // assign instr_o.imm_u        = instr_i[31:12];

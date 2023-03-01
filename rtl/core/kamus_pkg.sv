@@ -14,7 +14,7 @@ typedef enum logic [4:0] {
 } register_e;
 
 // Instruction Address Selection States:
-enum bit [2:0] {
+typedef enum bit [2:0] {
     PC4_ST, // PC+4 state
     PC_ST,  // PC state for state
     B_ST,
@@ -23,10 +23,10 @@ enum bit [2:0] {
 }instr_addr_sel_state_e;
 
 typedef enum logic [1:0]{
-    ALU_RESULT  = 2'b00;
-    MEM_RESULT  = 2'b01;
-    NEXT_PC     = 2'b10;
-} wb_options_e;
+    ALU_RESULT,     //= 2'b00,
+    MEM_RESULT,     //= 2'b01,
+    NEXT_PC         //= 2'b10
+}wb_options_e;
 
 // memory operation widths
 typedef enum logic [1:0] {
@@ -34,39 +34,6 @@ typedef enum logic [1:0] {
     H = 2'b01,
     W = 2'b10
 } mem_width_e;
-
-// Control Unit - Output
-typedef struct packed {
-    //operation_e             operation;
-    instr_types_e           instr_type;
-    instr_addr_sel_state_e  instr_addr_state;
-    wb_mux_sel_i            wb_sel;
-    logic                   l1d_wr_en;
-    logic                   regfile_wr_en;
-}control_unit_t;
-
-// ID - EX interface
-typedef struct packed {
-    // logic [6:0]     opcode;
-    // logic [4:0]     rd_addr;
-    // logic [2:0]     func3;
-    // register_e      rs1_addr;
-    // register_e      rs2_addr;
-    // logic [6:0]     func7;
-    // logic [11:0]    imm_i;
-    // logic [11:0]    imm_s;
-    // logic [11:0]    imm_b;
-    // logic [20:0]    imm_u;
-    // logic [20:0]    imm_j;
-    // connected to executed unit
-    logic [31:0]    immediate;
-    logic           immediate_used;
-    funct12_t       funct12;
-    logic [31:0]    pc;
-    operation_e     operation;
-
-    mem_width_e     memory_width;
-}instr_decoded_t;
 
 // careful: last two bit 11 (you can use first 5 bit if you want)
 typedef enum logic [6:0] {
@@ -237,5 +204,38 @@ typedef enum logic [11:0] {
     F12_MRET   = 12'b001100000010,
     F12_WFI    = 12'b000100000101
 } funct12_t;
+
+// ID - EX interface
+typedef struct packed {
+    // logic [6:0]     opcode;
+    // logic [4:0]     rd_addr;
+    // logic [2:0]     func3;
+    // register_e      rs1_addr;
+    // register_e      rs2_addr;
+    // logic [6:0]     func7;
+    // logic [11:0]    imm_i;
+    // logic [11:0]    imm_s;
+    // logic [11:0]    imm_b;
+    // logic [20:0]    imm_u;
+    // logic [20:0]    imm_j;
+    // connected to executed unit
+    logic [31:0]    immediate;
+    logic           immediate_used;
+    funct12_t       funct12;
+    logic [31:0]    pc;
+    operation_e     operation;
+
+    mem_width_e     memory_width;
+}instr_decoded_t;
+
+// Control Unit - Output
+typedef struct packed {
+    //operation_e             operation;
+    logic [6:0]             instr_type;
+    instr_addr_sel_state_e  instr_addr_state;
+    wb_options_e            wb_sel;
+    logic                   l1d_wr_en;
+    logic                   regfile_wr_en;
+}control_unit_t;
 
 endpackage

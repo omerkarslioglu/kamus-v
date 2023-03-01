@@ -10,7 +10,7 @@ module kamus_CU(
 
 always_comb begin
     unique case(control_unit_i.instr_type)     // instead of control_unit_i.operation
-        LUI_TYPE, AUIPC_TYPE        // LUI, AUIPC:
+        LUI_TYPE, AUIPC_TYPE:        // LUI, AUIPC:
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;

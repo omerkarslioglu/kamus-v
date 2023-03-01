@@ -5,7 +5,7 @@ import kamus_pkg::*;
 
 module kamus_IF
 #(
-    parameter logic [31:0] BOOT_ADDR = 32'h0;
+    parameter logic [31:0] BOOT_ADDR = 32'h0
 )(
     input logic clk_i, rst_ni,
     input logic flush_i,
@@ -27,13 +27,13 @@ module kamus_IF
 logic [31:0] pc_next;
 logic [31:0] pc_curr;
 
-instr_addr_sel_state_e instr_addr_sel;
+logic [2:0] instr_addr_sel_wire;
 
-assign instr_data_o = instr_data_i;
-assign instr_addr_sel <= instr_addr_sel_i;
+assign instr_data_o             = instr_data_i;
+assign instr_addr_sel_wire      = instr_addr_sel_i;
 
 always_comb begin
-    unique case(instr_addr_sel)
+    unique case(instr_addr_sel_wire)
         PC4_ST:     instr_addr_o = pc_next;
         PC_ST:      instr_addr_o = pc_curr;
         B_ST:       instr_addr_o = (is_branch_taken_i)? ex_rslt_i : pc_curr;
