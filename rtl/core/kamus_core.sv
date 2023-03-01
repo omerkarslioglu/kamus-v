@@ -217,6 +217,7 @@ kamus_MEM kamus_MEM_sub(
 );
 
 kamus_WB kamus_WB_sub(
+    // MEM-WB Interface:
     .regfile_wr_en_i    (regfile_wr_en_memwb_q),
     .ex_rslt_i          (ex_rslt_memwb_q),                          // the data0 that will be saved to regFile (and in MEM/WB register)
     .l1d_rd_data_i      (l1d_rd_data_memwb_q),                      // the data1 that will be saved to regFile (and in MEM/WB register)

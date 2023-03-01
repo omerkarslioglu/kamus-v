@@ -28,7 +28,19 @@ always_comb begin
         control_unit_o.l1d_wr_en            = 1'b0;
         control_unit_o.regfile_wr_en        = 1'b0;
 
-    LB, LH, LW:
+    LB, LH, LW, LBU, LHU:
+        control_unit_o.instr_addr_state     = PC_ST;
+        control_unit_o.wb_sel               = ALU_RESULT;
+        control_unit_o.l1d_wr_en            = 1'b0;
+        control_unit_o.regfile_wr_en        = 1'b1;
+    
+    SB, SH, SW:
+        control_unit_o.instr_addr_state     = PC_ST;
+        control_unit_o.wb_sel               = ALU_RESULT;
+        control_unit_o.l1d_wr_en            = 1'b1;
+        control_unit_o.regfile_wr_en        = 1'b0;
+    
+    ADD, SUB, SLT, SLTU, XOR, OR, AND, SL, SRL, SRA:
         control_unit_o.instr_addr_state     = PC_ST;
         control_unit_o.wb_sel               = ALU_RESULT;
         control_unit_o.l1d_wr_en            = 1'b0;
