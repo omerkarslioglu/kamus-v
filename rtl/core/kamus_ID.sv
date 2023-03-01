@@ -27,15 +27,22 @@ module kamus_ID #(
     output logic [31:0]             rs1_data_o,
     output logic [31:0]             rs2_data_o,
     output logic [31:0]             next_pc_o,
+        // Control Unit Outputs
     output instr_addr_sel_state_e   instr_addr_sel_o,
+    output logic [1:0]              wb_mux_sel_o,
+    output logic                    l1d_wr_en_o,
+    output logic                    regfile_wr_en_o,
     
-    // -- RegisterFile Interface:
+    // RegisterFile Interface:
     input logic [31:0]              rs1_data_i,
     input logic [31:0]              rs2_data_i,
     output logic [4:0]              rs1_addr_o,
     output logic [4:0]              rs2_addr_o,
-    output logic [4:0]              rd_addr_o
-    // --
+    output logic [4:0]              rd_addr_o,
+
+    // Control Unit Interface:
+    input control_unit_t            control_unit_output_i,
+    output control_unit_t           control_unit_input_o
 
 );
 
@@ -44,34 +51,37 @@ logic [32:0] immediate_val;
 
 //assign opcode = instr_i[6:0];
 
-assign instr_o.opcode           = instr_i[6:0];
-// assign instr_o.rd_addr          = instr_i[11:7];
-// assign instr_o.func3            = instr_i[14:12];
-// assign instr_o.rs1_addr         = instr_i[19:15];
-// assign instr_o.rs2_addr         = instr_i[24:20];
-// assign instr_o.func7            = instr_i[31:25];
-// assign instr_o.imm_i        = instr_i[31:20];
-// assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
-// assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
-// assign instr_o.imm_u        = instr_i[31:12];
-// assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
-assign instr_o.immediate        = immediate_val[31:0];
-assign instr_o.immediate_used   = immediate_val[32];
-assign instr_o.pc               = instr_addr_i;
-assign instr_o.operation        = decode_opcode(instr_i);
-assign immediate_val            = decode_immediate(instr_i);
-assign rs1_data_o               = rs1_data_i;
-assign rs2_data_o               = rs2_data_i;
-assign next_pc_o                = next_pc_i;
+assign instr_o.opcode                   = instr_i[6:0];
+// assign instr_o.rd_addr               = instr_i[11:7];
+// assign instr_o.func3                 = instr_i[14:12];
+// assign instr_o.rs1_addr              = instr_i[19:15];
+// assign instr_o.rs2_addr              = instr_i[24:20];
+// assign instr_o.func7                 = instr_i[31:25];
+// assign instr_o.imm_i                 = instr_i[31:20];
+// assign instr_o_imm_s                 = {instr_i[31:25], instr_i[11:7]};
+// assign instr_o_imm_b                 = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
+// assign instr_o.imm_u                 = instr_i[31:12];
+// assign instr_o.imm_j                 = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
+assign instr_o.immediate                = immediate_val[31:0];
+assign instr_o.immediate_used           = immediate_val[32];
+assign instr_o.pc                       = instr_addr_i;
+assign instr_o.operation                = decode_opcode(instr_i);
+assign immediate_val                    = decode_immediate(instr_i);
+assign rs1_data_o                       = rs1_data_i;
+assign rs2_data_o                       = rs2_data_i;
+assign next_pc_o                        = next_pc_i;
 
-// -- for register file interface
-assign rs1_addr_o               = instr_i`rs1;
-assign rs2_addr_o               = instr_i`rs2;
-assign rd_addr_o                = instr_i`rd;
-// --
+// Register File Interface      
+assign rs1_addr_o                       = instr_i`rs1;
+assign rs2_addr_o                       = instr_i`rs2;
+assign rd_addr_o                        = instr_i`rd;
 
-// -- Control Unit
-assign instr_addr_sel_o         =  // Control Unit Bağlı Olacak
+// Control Unit Interface
+assign control_unit_input_o.instr_type  = instr`opcode;
+assign instr_addr_sel_o                 = control_unit_output_i.instr_addr_state;
+assign wb_mux_sel_o                     = control_unit_output_i.wb_sel;                        
+assign l1d_wr_en_o                      = control_unit_output_i.l1d_wr_en;
+assign regfile_wr_en_o                  = control_unit_output_i.regfile_wr_en;
 
 function automatic operation_e decode_opcode(logic [31:0] instr);
     logic [11:0] funct12 = instr`funct12;
@@ -89,7 +99,11 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
         JAL_TYPE[6:2]:  return JAL;
         JALR_TYPE[6:2]: return JALR;
         B_TYPE[6:2]:
-            unique case (funct3)
+            unique case (funct3)= instr_i[31:20];
+            // assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
+            // assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
+            // assign instr_o.imm_u        = instr_i[31:12];
+            // assign instr_o.imm_j        = {instr_i[20], instr_i[10:1], instr_i[11] ,instr_i[12:19]};
                 F3_BEQ:     return BEQ;
                 F3_BNE:     return BNE;
                 F3_BLT:     return BLT;
@@ -162,7 +176,6 @@ function automatic logic validate_csr_op(logic write, csr_e csr);
         CYCLE, TIME, CYCLEH, TIMEH: return '1;
         default:                    return '0;
     endcase
-
 endfunction
 
 // sign extended decoded

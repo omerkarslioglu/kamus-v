@@ -41,7 +41,6 @@ module kamus_MEM(
     input instr_addr_sel_state_e    instr_addr_sel_i,
 
     // WB stage interface (next stage)
-    output logic                    regfile_wr_en_o,  
     output logic [31:0]             ex_rslt_o,                  // the data0 that will be saved to regFile (and in MEM/WB register)
     output logic [31:0]             l1d_rd_data_o,              // the data1 that will be saved to regFile (and in MEM/WB register)
     output logic [1:0]              wb_mux_sel_o,
@@ -49,6 +48,7 @@ module kamus_MEM(
     output logic [31:0]             next_pc_o,
     output logic                    is_branch_taken_o,
     output instr_addr_sel_state_e   instr_addr_sel_o,
+    output logic                    regfile_wr_en_o,  
     
     // $L1D Interface
     input logic [31:0]              l1d_rd_data_i,          
@@ -63,7 +63,6 @@ assign l1d_wr_en_o                  = l1d_wr_en_i;
 assign l1d_addr_o                   = ex_rslt_i;
 assign l1d_wr_data_o                = lsu_data_buff;            // it will be used store
 assign next_pc_o                    = next_pc_i;
-
 
 // MEM/WB Register Inputs:
 assign regfile_wr_en_o              = regfile_wr_en_i;

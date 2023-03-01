@@ -147,15 +147,18 @@ kamus_ID_sub
     .rs1_data_o         (rs1_data_idex_d),
     .rs2_data_o         (rs2_data_idex_d),
     .next_pc_o          (next_pc_idex_d),
+        // Comes From Controller Unit
     .instr_addr_sel_o   (instr_addr_sel_idex_d),
+    .wb_mux_sel_o       (wb_mux_sel_idex_d),
+    .l1d_wr_en_o        (l1d_wr_en_idex_d),
+    .regfile_wr_en_o    (regfile_wr_en_idex_d),
     
-    // -- RegisterFile Interface:
+    // RegisterFile Interface:
     .rs1_data_i         (rs1_data_wire),
     .rs2_data_i         (rs2_data_wire),
     .rs1_addr_o         (rs1_addr_wire),
     .rs2_addr_o         (rs2_addr_wire),
     .rd_addr_o          (rd_addr_idex_d)
-    // --
 );
 
 kamus_EX kamus_EX_sub(
@@ -174,14 +177,15 @@ kamus_EX kamus_EX_sub(
     .next_pc_o          (next_pc_exmem_d),
 
     // Buffered Connections Control Signals:
+    .instr_addr_sel_i   (instr_addr_sel_idex_q),
+    .wb_mux_sel_i       (wb_mux_sel_idex_q),
     .l1d_wr_en_i        (l1d_wr_en_idex_q),
     .regfile_wr_en_i    (regfile_wr_en_idex_q),
-    .wb_mux_sel_i       (wb_mux_sel_idex_q),
-    .l1d_wr_en_o        (l1d_wr_en_exmem_d),  
-    .regfile_wr_en_o    (regfile_wr_en_exmem_d),
-    .wb_mux_sel_o       (wb_mux_sel_exmem_d),
-    .instr_addr_sel_i   (instr_addr_sel_idex_q),
+    
     .instr_addr_sel_o   (instr_addr_sel_exmem_d),
+    .wb_mux_sel_o       (wb_mux_sel_exmem_d),
+    .l1d_wr_en_o        (l1d_wr_en_exmem_d),  
+    .regfile_wr_en_o    (regfile_wr_en_exmem_d)
 );
 
 kamus_MEM kamus_MEM_sub(
@@ -273,7 +277,10 @@ always_ff @(posedge clk_i) begin
         rs1_data_idex_q                     <= 32'b0;
         rs2_data_idex_q                     <= 32'b0;
         next_pc_idex_q                      <= 32'b0;
-        instr_addr_sel_idex_q               <= 2'b01;
+        instr_addr_sel_idex_q               <= PC_ST;//2'b01;
+        wb_mux_sel_idex_q                   <= ALU_RESULT; // 2'b00
+        l1d_wr_en_idex_q                    <= 1'b0;
+        regfile_wr_en_idex_q                <= 1'b0;
     end else begin
         instr_idex_q                        <= instr_idex_d;
         rs1_data_idex_q                     <= rs1_data_idex_d;
@@ -281,6 +288,9 @@ always_ff @(posedge clk_i) begin
         rd_addr_idex_q                      <= rd_addr_idex_d;
         next_pc_idex_q                      <= next_pc_idex_d;
         instr_addr_sel_idex_q               <= instr_addr_sel_idex_d;
+        wb_mux_sel_idex_q                   <= wb_mux_sel_idex_d;
+        l1d_wr_en_idex_q                    <= l1d_wr_en_idex_d;
+        regfile_wr_en_idex_q                <= regfile_wr_en_idex_d;
     end
 end
 

@@ -46,7 +46,7 @@ always_comb begin
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
 
-        default:                // flush and unexpected conditions
+        default:                    // flush and unexpected conditions
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT; // doesn't matter
             control_unit_o.l1d_wr_en            = 1'b0;
