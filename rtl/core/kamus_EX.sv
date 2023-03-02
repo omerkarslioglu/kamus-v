@@ -3,29 +3,30 @@ UNVALID
 */
 
 module kamus_EX(
+    // ID/EX Insterface:
     input instr_decoded_t           instr_i,
     input logic [31:0]              rs1_data_i,
     input logic [31:0]              rs2_data_i,
+    input logic [4:0]               rd_addr_i,
+    input logic [31:0]              next_pc_i,
+        // Buffered Control Signals:
+    input instr_addr_sel_state_e    instr_addr_sel_i,
+    input logic [1:0]               wb_mux_sel_i,
+    input logic                     l1d_wr_en_i,  
+    input logic                     regfile_wr_en_i,
+
+    // EX/MEM Interface:
     output logic [5:0]              operation_o,
     output logic [31:0]             ex_o,
     output logic                    is_branch_taken_o,
-
-    // Buffered Connections Data&Addr:
-    input logic [4:0]               rd_addr_i,
-    output logic [4:0]              rd_addr_o,
     output logic [31:0]             rs2_data_o,
-    input logic [31:0]              next_pc_i,
+    output logic [4:0]              rd_addr_o,
     output logic [31:0]             next_pc_o,
-
-    // Buffered Control Signals:
-    input logic                     l1d_wr_en_i,  
-    input logic                     regfile_wr_en_i,
-    input logic [1:0]               wb_mux_sel_i,
-    output logic                    l1d_wr_en_o,
-    output logic                    regfile_wr_en_o,
+        // Buffered Control Signals:
+    output instr_addr_sel_state_e   instr_addr_sel_o,
     output logic [1:0]              wb_mux_sel_o,
-    input instr_addr_sel_state_e    instr_addr_sel_i,
-    output instr_addr_sel_state_e   instr_addr_sel_o
+    output logic                    l1d_wr_en_o,
+    output logic                    regfile_wr_en_o
 );
 
 assign ex_o                         = execute(instr_i, rs1_data_i, rs2_data_i);

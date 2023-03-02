@@ -14,17 +14,6 @@ module kamus_core(
     output logic [31:0] l1d_wr_data_o
 );
 
-// ID-RegFile Wires
-logic [31:0]    rs1_data_wire;
-logic [31:0]    rs2_data_wire;
-logic [4:0]     rs1_addr_wire;
-logic [4:0]     rs2_addr_wire;
-
-// WB-RegFile Wires
-logic           regfile_wr_en_wire;
-logic [4:0]     rd_addr_wire;
-logic [31:0]    wb_data_wire;
-
 // IF/ID FlipFlop IOs
 logic [31:0]    instr_data_ifid_d;
 logic [31:0]    next_pc_ifid_d;
@@ -105,6 +94,20 @@ logic [31:0]            ex_rslt_o_wbif_q;
 logic                   is_branch_taken_wbif_q;
 instr_addr_sel_state_e  instr_addr_sel_wbif_q;
 
+// ID-RegFile Wires
+logic [31:0]    rs1_data_wire;
+logic [31:0]    rs2_data_wire;
+logic [4:0]     rs1_addr_wire;
+logic [4:0]     rs2_addr_wire;
+
+// WB-RegFile Wires
+logic           regfile_wr_en_wire;
+logic [4:0]     rd_addr_wire;
+logic [31:0]    wb_data_wire;
+
+// Control Unit Wires
+control_unit_t control_unit_input_wire;
+control_unit_t control_unit_output_wire;
 
 
 kamus_IF #(
@@ -158,30 +161,34 @@ kamus_ID_sub
     .rs2_data_i         (rs2_data_wire),
     .rs1_addr_o         (rs1_addr_wire),
     .rs2_addr_o         (rs2_addr_wire),
-    .rd_addr_o          (rd_addr_idex_d)
+    .rd_addr_o          (rd_addr_idex_d),
+
+    // Control Unit Interface
+    .control_unit_output_i(control_unit_output_wire),
+    .control_unit_input_o(control_unit_input_wire)
 );
 
 kamus_EX kamus_EX_sub(
+    // ID/EX Insterface:
     .instr_i            (instr_idex_q),
     .rs1_data_i         (rs1_data_idex_q),
     .rs2_data_i         (rs2_data_idex_q),
-    .operation_o        (operation_exmem_d),
-    .ex_o               (ex_rslt_exmem_d),
-    .is_branch_taken_o  (is_branch_taken_exmem_d),
-
-     // Buffered Connections Data&Addr:
     .rd_addr_i          (rd_addr_idex_q),
-    .rs2_data_o         (rs2_data_exmem_d),
-    .rd_addr_o          (rd_addr_exmem_d),
     .next_pc_i          (next_pc_idex_q),
-    .next_pc_o          (next_pc_exmem_d),
-
-    // Buffered Connections Control Wires:
+        // Buffered Control Signals:
     .instr_addr_sel_i   (instr_addr_sel_idex_q),
     .wb_mux_sel_i       (wb_mux_sel_idex_q),
     .l1d_wr_en_i        (l1d_wr_en_idex_q),
     .regfile_wr_en_i    (regfile_wr_en_idex_q),
-    
+
+    // EX/MEM Interface:
+    .operation_o        (operation_exmem_d),
+    .ex_o               (ex_rslt_exmem_d),
+    .is_branch_taken_o  (is_branch_taken_exmem_d),
+    .rs2_data_o         (rs2_data_exmem_d),
+    .rd_addr_o          (rd_addr_exmem_d),
+    .next_pc_o          (next_pc_exmem_d),
+        // EX/MEM Interface:
     .instr_addr_sel_o   (instr_addr_sel_exmem_d),
     .wb_mux_sel_o       (wb_mux_sel_exmem_d),
     .l1d_wr_en_o        (l1d_wr_en_exmem_d),  
@@ -250,6 +257,11 @@ register_file(
     .rs2_addr_i         (rs2_addr_wire),                            // source2 register addr                
     .rs1_data_o         (rs1_data_wire),                            // read data1
     .rs2_data_o         (rs2_data_wire)                             // read data2
+);
+
+kamus_CU(
+    .control_unit_i(control_unit_input_wire),                       // comes from just instr_type (or operation)
+    .control_unit_o(control_unit_output_wire)
 );
 
 // IF/ID FlipFLop
