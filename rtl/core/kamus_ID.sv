@@ -39,8 +39,8 @@ module kamus_ID #(
     output logic [4:0]              rd_addr_o,
 
     // Control Unit Interface:
-    input control_unit_t            control_unit_output_i,
-    output control_unit_t           control_unit_input_o
+    input control_unit_output_t     control_unit_output_i,
+    output control_unit_input_t     control_unit_input_o
 
 );
 
@@ -49,7 +49,7 @@ logic [32:0] immediate_val;
 
 //assign opcode = instr_i[6:0];
 
-assign instr_o.opcode                   = instr_i[6:0];
+//assign instr_o.opcode                 = instr_i[6:0];
 // assign instr_o.rd_addr               = instr_i[11:7];
 // assign instr_o.func3                 = instr_i[14:12];
 // assign instr_o.rs1_addr              = instr_i[19:15];
@@ -96,7 +96,7 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
         AUIPC_TYPE[6:2]:return AUIPC;
         JAL_TYPE[6:2]:  return JAL;
         JALR_TYPE[6:2]: return JALR;
-        B_TYPE[6:2]:
+        B_TYPE[6:2]: begin
             unique case (funct3)
             // assign instr_o_imm_s        = {instr_i[31:25], instr_i[11:7]};
             // assign instr_o_imm_b        = {instr_i[12], instr_i[10:5], instr_i[4:1], instr_i[11]};
@@ -109,7 +109,8 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                 F3_BGE:     return BGE;
                 F3_BGEU:    return BGEU;
             endcase
-        L_TYPE[6:2]:
+        end
+        L_TYPE[6:2]: begin
             unique case (funct3)
                 F3_LB:     return LB;
                 F3_LH:     return LH;
@@ -117,11 +118,13 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                 F3_LBU:    return LBU;
                 F3_LHU:    return LHU;
             endcase
-        S_TYPE[6:2]: 
+        end
+        S_TYPE[6:2]: begin
                 F3_SW:      return SW;
                 F3_SH:      return SH;
                 F3_SB:      return SB;
-        ALU_I_TYPE, ALU_TYPE:
+        end
+        ALU_I_TYPE[6:2], ALU_TYPE[6:2]: begin
             unique case (funct3)
                 // there is no SUBI instruction so also check opcode
                 F3_ADDSUB:  return instr[5] && funct12[10] ? SUB : ADD;
@@ -136,8 +139,9 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                 F3_SR:      return funct12[5] ? INVALID : (funct12[10] ? SRA : SRL);
                 default:    return INVALID;
             endcase
+        end
         FENCE_TYPE[6:2]:return funct3[0] ? FENCE_I : FENCE;
-        CSR_TYPE[6:2]:
+        CSR_TYPE[6:2]: begin
             unique case (funct3[1:0])
                 // when rs1 is zero we are not writing to the CSR. This is used when checking for
                 // an illegal write to a read-only CSR.
@@ -155,6 +159,7 @@ function automatic operation_e decode_opcode(logic [31:0] instr);
                     default:    return INVALID;
                 endcase
             endcase
+        end
         default: return INVALID;
     endcase
 endfunction

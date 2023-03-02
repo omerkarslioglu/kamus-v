@@ -4,8 +4,8 @@
 import kamus_pkg::*;
 
 module kamus_CU(
-    input   control_unit_t      control_unit_i,          // comes from just instr_type (or operation)
-    output  control_unit_t      control_unit_o
+    input   control_unit_input_t    control_unit_i,          // comes from just instr_type (or operation)
+    output  control_unit_output_t   control_unit_o
 );
 
 always_comb begin

@@ -221,21 +221,25 @@ typedef struct packed {
     // connected to executed unit
     logic [31:0]    immediate;
     logic           immediate_used;
-    funct12_t       funct12;
+    //funct12_t       funct12;
     logic [31:0]    pc;
     operation_e     operation;
-    logic [6:0]     opcode;
-    mem_width_e     memory_width;
+    //logic [6:0]     opcode;
+    //mem_width_e     memory_width;
 }instr_decoded_t;
 
-// Control Unit - Output
+// Control Unit - Input:
 typedef struct packed {
-    //operation_e             operation;
     logic [6:0]             instr_type;
+}control_unit_input_t;
+
+// Control Unit - Output:
+typedef struct packed {
     instr_addr_sel_state_e  instr_addr_state;
     wb_options_e            wb_sel;
     logic                   l1d_wr_en;
     logic                   regfile_wr_en;
-}control_unit_t;
+}control_unit_output_t;
+
 
 endpackage

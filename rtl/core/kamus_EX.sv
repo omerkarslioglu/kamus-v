@@ -71,8 +71,8 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
                     return instr.pc + instr.immediate;
         JALR:       return (rs1_value + instr.immediate) & 32'hfffffffe; // set LSB to 0
         FENCE_I:    return next_pc_i;
-        CSRRW, CSRRS, CSRRC: 
-                    return read_csr(csr_e'(instr.funct12));
+        //CSRRW, CSRRS, CSRRC: 
+        //            return read_csr(csr_e'(instr.funct12));
         
         default:    return 'x;
     endcase

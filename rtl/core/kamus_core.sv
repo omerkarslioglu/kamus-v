@@ -44,7 +44,7 @@ logic [31:0]            next_pc_idex_q;
 instr_addr_sel_state_e  instr_addr_sel_idex_q;
 
 // EX/MEM FlipFlop IOs
-logic [4:0]             operation_exmem_d;
+logic [5:0]             operation_exmem_d;
 logic [31:0]            ex_rslt_exmem_d;
 logic [31:0]            rs2_data_exmem_d;
 logic [4:0]             rd_addr_exmem_d;
@@ -55,7 +55,7 @@ logic [31:0]            next_pc_exmem_d;
 logic                   is_branch_taken_exmem_d;
 instr_addr_sel_state_e  instr_addr_sel_exmem_d;
 
-logic [4:0]             operation_exmem_q;
+logic [5:0]             operation_exmem_q;
 logic [31:0]            ex_rslt_exmem_q;
 logic [31:0]            rs2_data_exmem_q;
 logic [4:0]             rd_addr_exmem_q;
@@ -106,8 +106,8 @@ logic [4:0]             rd_addr_wire;
 logic [31:0]            wb_data_wire;
 
 // Control Unit Wires
-control_unit_t          control_unit_input_wire;
-control_unit_t          control_unit_output_wire;
+control_unit_input_t    control_unit_input_wire;
+control_unit_output_t   control_unit_output_wire;
 
 // FlipFlop Q Wires
 logic [31:0]            instr_data_ifid_q_wire;
@@ -264,8 +264,6 @@ kamus_EX kamus_EX_sub(
 );
 
 kamus_MEM kamus_MEM_sub(
-    .clk_i              (clk_i), 
-    .rst_ni             (rst_ni),
     // EX-MEM Interface:
     .rs2_data_i         (rs2_data_exmem_q_wire),                         // rs2 values: ID(gen)->EX(buff)->MEM(used) (when store command taken)
     .ex_rslt_i          (ex_rslt_exmem_q_wire),                          // ALU rslt: EX(gen)->MEM(used)
@@ -318,7 +316,7 @@ kamus_WB kamus_WB_sub(
     .rd_addr_o          (rd_addr_wire)
 );
 
-register_file(
+register_file register_file_sub(
     .clk_i              (clk_i), 
     .rst_ni             (rst_ni),
     .reg_wr_en_i        (regfile_wr_en_wire),
@@ -330,7 +328,7 @@ register_file(
     .rs2_data_o         (rs2_data_wire)                             // read data2
 );
 
-kamus_CU(
+kamus_CU kamus_CU_sub(
     .control_unit_i(control_unit_input_wire),                       // comes from just instr_type (or operation)
     .control_unit_o(control_unit_output_wire)
 );
@@ -353,10 +351,10 @@ always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
         instr_idex_q.immediate              <= 32'b0;
         instr_idex_q.immediate_used         <= 1'b0;
-        instr_idex_q.funct12                <= F12_ECALL;
+        //instr_idex_q.funct12                <= F12_ECALL;
         instr_idex_q.pc                     <= 32'b0;
         instr_idex_q.operation              <= INVALID;
-        instr_idex_q.memory_width           <= W;
+        //instr_idex_q.memory_width           <= W;
         rs1_data_idex_q                     <= 32'b0;
         rs2_data_idex_q                     <= 32'b0;
         next_pc_idex_q                      <= 32'b0;

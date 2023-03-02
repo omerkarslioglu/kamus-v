@@ -31,6 +31,7 @@ logic [2:0] instr_addr_sel_wire;
 
 assign instr_data_o             = instr_data_i;
 assign instr_addr_sel_wire      = instr_addr_sel_i;
+assign next_pc_o                = pc_next;
 
 always_comb begin
     unique case(instr_addr_sel_wire)

@@ -25,8 +25,6 @@ UNVALID
 */
 
 module kamus_MEM(
-    input clk_i, rst_ni,
-
     // EX stage interface (prev. stage)
     input logic [31:0]              rs2_data_i,                 // rs2 values comes from kamus_EX (regfile) (when store command taken)
     input logic [31:0]              ex_rslt_i,                  // comes from kamus_EX (ALU)
