@@ -3,7 +3,7 @@ UNVALID
 */
 
 module kamus_EX(
-    // ID/EX Insterface:
+    // ID-EX Insterface:
     input instr_decoded_t           instr_i,
     input logic [31:0]              rs1_data_i,
     input logic [31:0]              rs2_data_i,
@@ -15,7 +15,7 @@ module kamus_EX(
     input logic                     l1d_wr_en_i,  
     input logic                     regfile_wr_en_i,
 
-    // EX/MEM Interface:
+    // EX-MEM Interface:
     output logic [5:0]              operation_o,
     output logic [31:0]             ex_o,
     output logic                    is_branch_taken_o,
@@ -69,7 +69,7 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
         // JAL, JALR: return next_pc_i; // next instr
         JAL, BEQ, BNE, BLT, BGE, BLTU, BGEU: 
                     return instr.pc + instr.immediate;
-        JALR:       return (rs1_value + instr.immediate) & 32'h_ff_ff_ff_fe; // set LSB to 0
+        JALR:       return (rs1_value + instr.immediate) & 32'hfffffffe; // set LSB to 0
         FENCE_I:    return next_pc_i;
         CSRRW, CSRRS, CSRRC: 
                     return read_csr(csr_e'(instr.funct12));
@@ -101,13 +101,13 @@ function automatic logic [31:0] read_csr(csr_e csr_addr);
             MCYCLE,  MTIME:  return cycles[31:0];
             MCYCLEH, MTIMEH: return cycles[63:32];
 `endif
-            CYCLE,  TIME:  return cycles[31:0];
-            CYCLEH, TIMEH: return cycles[63:32];
+            //CYCLE,  TIME:  return cycles[31:0];
+            //CYCLEH, TIMEH: return cycles[63:32];
             default:   return 'x;
         endcase
 endfunction
 
-function automatic logic is_branch_taken(operation_e operation, logic [31:0] rs1_value, logic [31:0] rs2_value);
+function automatic logic is_branch_taken(logic [6:0] operation, logic [31:0] rs1_value, logic [31:0] rs2_value);
     unique case (operation)
         BEQ:  return rs1_value == rs2_value;
         BNE:  return rs1_value != rs2_value;

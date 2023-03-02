@@ -15,8 +15,6 @@ import kamus_pkg::*;
 module kamus_ID #(
     parameter PC_WIDTH = 32
 )(
-    input logic clk_i, rst_ni,
-
     // Interface between IF-ID stages
     input logic [31:0]              instr_i,
     input logic [31:0]              instr_addr_i,       // comes from fetch stage: kamus_IF (instr_addr)

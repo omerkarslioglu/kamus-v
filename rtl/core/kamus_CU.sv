@@ -9,48 +9,49 @@ module kamus_CU(
 );
 
 always_comb begin
-    unique case(control_unit_i.instr_type)     // instead of control_unit_i.operation
-        LUI_TYPE, AUIPC_TYPE:        // LUI, AUIPC:
+    unique case(control_unit_i.instr_type)      // instead of control_unit_i.operation
+        LUI_TYPE, AUIPC_TYPE: begin                    // LUI, AUIPC:
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
-
-        JAL_TYPE, JALR_TYPE:        // JAL, JALR:
+        end
+        JAL_TYPE, JALR_TYPE: begin        // JAL, JALR:
             control_unit_o.instr_addr_state     = J_ST;
             control_unit_o.wb_sel               = NEXT_PC;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
-
-        B_TYPE:                    // BEQ, BNE, BLT, BGE, BLTU, BGEU:
+        end
+        B_TYPE: begin                   // BEQ, BNE, BLT, BGE, BLTU, BGEU:
             control_unit_o.instr_addr_state     = B_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b0;
-
-        L_TYPE:                     // LB, LH, LW, LBU, LHU:
+        end
+        L_TYPE: begin                     // LB, LH, LW, LBU, LHU:
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
-        
-        S_TYPE:                     // SB, SH, SW:
+        end
+        S_TYPE: begin                     // SB, SH, SW:
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b1;
             control_unit_o.regfile_wr_en        = 1'b0;
-        
-        ALU_I_TYPE, ALU_TYPE:       // ADD, SUB, SLT, SLTU, XOR, OR, AND, SL, SRL, SRA:
+        end
+        ALU_I_TYPE, ALU_TYPE: begin       // ADD, SUB, SLT, SLTU, XOR, OR, AND, SL, SRL, SRA:
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
-
-        default:                    // flush and unexpected conditions
+        end
+        default: begin                   // flush and unexpected conditions
             control_unit_o.instr_addr_state     = PC_ST;
             control_unit_o.wb_sel               = ALU_RESULT; // doesn't matter
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b0;
+        end
     endcase
 end
 

@@ -22,7 +22,7 @@ typedef enum bit [2:0] {
     //ALU_ST // J&B states
 }instr_addr_sel_state_e;
 
-typedef enum logic [1:0]{
+typedef enum bit [1:0]{
     ALU_RESULT,     //= 2'b00,
     MEM_RESULT,     //= 2'b01,
     NEXT_PC         //= 2'b10
@@ -39,8 +39,8 @@ typedef enum logic [1:0] {
 typedef enum logic [6:0] {
     LUI_TYPE    = 7'b0110111,
     AUIPC_TYPE  = 7'b0010111,
-    JAL_TYPE    = 7'b0010111,
-    JALR_TYPE   = 7'B1100111,
+    JAL_TYPE    = 7'b1101111,
+    JALR_TYPE   = 7'b1100111,
     B_TYPE      = 7'b1100011,
     L_TYPE      = 7'b0000011,
     S_TYPE      = 7'b0100011,
@@ -48,7 +48,7 @@ typedef enum logic [6:0] {
     ALU_TYPE    = 7'b0110011,
     FENCE_TYPE  = 7'b0001111,
     CSR_TYPE    = 7'b1110011
-}instr_types_e;
+} instr_types_e;
 
 // internal, decoded opcodes
 typedef enum logic [5:0] {
@@ -224,7 +224,7 @@ typedef struct packed {
     funct12_t       funct12;
     logic [31:0]    pc;
     operation_e     operation;
-
+    logic [6:0]     opcode;
     mem_width_e     memory_width;
 }instr_decoded_t;
 

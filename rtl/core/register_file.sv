@@ -14,12 +14,13 @@ module register_file(
 );
 
 logic [31:0] registers [1:31];
+integer i;
 
 // register write
 always_ff @(posedge clk_i) begin
     if(~rst_ni) begin
         // initial reset:
-        for(int i = 1; i<32; i++) begin
+        for(i = 1; i<32; i++) begin
             registers[i] <= 32'b0;
         end
     end else begin
