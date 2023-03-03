@@ -74,7 +74,7 @@ function automatic logic [31:0] execute(instr_decoded_t instr, logic [31:0] rs1_
         //CSRRW, CSRRS, CSRRC: 
         //            return read_csr(csr_e'(instr.funct12));
         
-        default:    return 'x;
+        default:    return '0;
     endcase
 endfunction
 

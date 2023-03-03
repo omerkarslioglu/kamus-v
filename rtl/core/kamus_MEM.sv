@@ -59,7 +59,7 @@ logic [31:0] lsu_data_buff;                                     // it was design
 
 assign l1d_wr_en_o                  = l1d_wr_en_i; 
 assign l1d_addr_o                   = ex_rslt_i;
-assign l1d_wr_data_o                = lsu_data_buff;            // it will be used store
+assign l1d_wr_data_o                = (l1d_wr_en_i) ? lsu_data_buff : 32'h00000000;            // it will be used store
 assign next_pc_o                    = next_pc_i;
 
 // MEM/WB Register Inputs:

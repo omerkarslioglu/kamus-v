@@ -30,7 +30,7 @@ always_comb begin
         end
         L_TYPE: begin                     // LB, LH, LW, LBU, LHU:
             control_unit_o.instr_addr_state     = PC_ST;
-            control_unit_o.wb_sel               = ALU_RESULT;
+            control_unit_o.wb_sel               = MEM_RESULT;
             control_unit_o.l1d_wr_en            = 1'b0;
             control_unit_o.regfile_wr_en        = 1'b1;
         end

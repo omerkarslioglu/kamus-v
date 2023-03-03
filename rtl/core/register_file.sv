@@ -13,8 +13,7 @@ module register_file(
     output logic [31:0] rs2_data_o         // read data2
 );
 
-logic [31:0] registers [1:31];
-integer i;
+logic [31:0] registers [0:31];
 
 // register write
 always_ff @(posedge clk_i) begin
