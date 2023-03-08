@@ -18,6 +18,9 @@ logic [31:0] l1d_wr_data_o;
 // Buffers to Verify:
 logic [31:0] pc_buff = 32'h00000000;
 
+// Immadiate Number Data
+logic [19:0] imm_val_20bit = 20'h00000;
+
 kamus_core kamus_core_uut(.*);
 
 always #(CLK_PERIOD/2.0)    clk_i <= ~clk_i; 
@@ -28,14 +31,16 @@ initial begin
     rst_ni  <= 1'b1;
     l1i_instr_data_i        = 32'b0;
     #(CLK_PERIOD*2)
-
+    
+    $display("\n\nINSTRUCTION TEST IS LOADING...\n");
+    #(CLK_PERIOD*2)
     // Algorithm Start Here:
         // ALU Operations:
-    l1i_instr_data_i        = 32'b000000000001_00000_000_00001_0010011; // addi rd1, rs0, 1;
+    l1i_instr_data_i        = 32'b000000000001_00000_000_00001_0010011;                     // addi rd1, rs0, 1;
     #(CLK_PERIOD*5)
-    l1i_instr_data_i        = 32'b000000000010_00000_000_00010_0010011; // addi rd2, rs0, 2;
+    l1i_instr_data_i        = 32'b000000000010_00000_000_00010_0010011;                     // addi rd2, rs0, 2;
     #(CLK_PERIOD*5)
-    l1i_instr_data_i        = 32'b000000000011_00000_000_00011_0010011; // addi rd3, rs0, 3;
+    l1i_instr_data_i        = 32'b000000000011_00000_000_00011_0010011;                     // addi rd3, rs0, 3;
     #(CLK_PERIOD*5)
 
         // Load Operations:
@@ -69,14 +74,17 @@ initial begin
     else $fatal("BEQ: FALSE");
 
         // LUI Operation
-    l1i_instr_data_i        = {20'b01, 5'b11101, LUI_TYPE};
+    imm_val_20bit           = $random();
+    l1i_instr_data_i        = {imm_val_20bit, 5'b11101, LUI_TYPE};                              // lui  $rs29, 0x1;
+    #(CLK_PERIOD*5) 
+    l1i_instr_data_i        = 32'b000000000001_11101_000_11100_0010011;                         // addi $rd28, $rs29, 0x1;
     #(CLK_PERIOD*5)
-    l1i_instr_data_i        = 32'b000000000001_11101_000_11100_0010011; // addi rd28, rs29, 1;
+    l1i_instr_data_i        = {7'b0000000, 5'b11100, 5'b00001, F3_SW, 5'b00001, S_TYPE};        // sw   $rs28, $rs1(0x1)
     #(CLK_PERIOD*5)
-    l1i_instr_data_i        = {7'b0000000, 5'b11100, 5'b00001, F3_SW, 5'b00001, S_TYPE};
-    #(CLK_PERIOD*5)
-    assert(l1d_addr_o == 32'h00000002 && l1d_wr_data_o == {20'b01, 12'b01}) $display("LUI: TRUE");
+    assert(l1d_addr_o == 32'h00000002 && l1d_wr_data_o == {imm_val_20bit, 12'b01}) $display("LUI: TRUE");
     else $fatal("LUI: FALSE");
+    
+    $display("\nTEST IS COMPLETED SUCCESSFULLY!\n\n");
     $finish;
     
 end
