@@ -21,6 +21,11 @@ logic [31:0] pc_buff = 32'h00000000;
 // Immadiate Number Data
 logic [19:0] imm_val_20bit = 20'h00000;
 
+// Random Register Address
+logic [4:0] rs1_random_addr;
+logic [4:0] rs2_random_addr;
+logic [4:0] rd_random_addr;
+
 kamus_core kamus_core_uut(.*);
 
 always #(CLK_PERIOD/2.0)    clk_i <= ~clk_i; 
@@ -74,12 +79,17 @@ initial begin
     else $fatal("BEQ: FALSE");
 
         // LUI Operation
+    //rs1_random_addr         = $urandom_range(5'd31, 5'd2);
+    //rs2_random_addr         = $urandom_range(5'd31, 5'd2);
+    rd_random_addr          = $urandom_range(5'd31, 5'd2);
     imm_val_20bit           = $random();
-    l1i_instr_data_i        = {imm_val_20bit, 5'b11101, LUI_TYPE};                              // lui  $rs29, 0x1;
+    l1i_instr_data_i        = {imm_val_20bit, 5'b11101, LUI_TYPE};                                      // lui  $r29, 0x1;
     #(CLK_PERIOD*5) 
-    l1i_instr_data_i        = 32'b000000000001_11101_000_11100_0010011;                         // addi $rd28, $rs29, 0x1;
+    l1i_instr_data_i        = {12'b000000000001, 5'b11101, F3_ADDSUB, rd_random_addr , ALU_I_TYPE};     // addi $random, $r29, 0x1;
     #(CLK_PERIOD*5)
-    l1i_instr_data_i        = {7'b0000000, 5'b11100, 5'b00001, F3_SW, 5'b00001, S_TYPE};        // sw   $rs28, $rs1(0x1)
+    l1i_instr_data_i        = {12'b000000000001, 5'b00000, F3_ADDSUB, 5'b00001 , ALU_I_TYPE};           // addi r1, r0, 0x1;  # for store operation
+    #(CLK_PERIOD*5)
+    l1i_instr_data_i        = {7'b0000000, rd_random_addr, 5'b00001, F3_SW, 5'b00001, S_TYPE};          // sw   $random, $r1(0x1)  # to check
     #(CLK_PERIOD*5)
     assert(l1d_addr_o == 32'h00000002 && l1d_wr_data_o == {imm_val_20bit, 12'b01}) $display("LUI: TRUE");
     else $fatal("LUI: FALSE");
