@@ -48,7 +48,6 @@ initial begin
     #(CLK_PERIOD*5)
     
         // Store Operations:
-    l1d_rd_data_i           = 32'h0111111f;
     l1i_instr_data_i        = {7'b0000000, 5'b00010, 5'b00001, F3_SW, 5'b00001, S_TYPE};
     #(CLK_PERIOD*5)
     assert(l1d_addr_o == 32'h00000002 && l1d_wr_data_o == 32'h00000002) $display("SW: TRUE");
@@ -68,6 +67,16 @@ initial begin
     #(CLK_PERIOD*5)
     assert(l1i_instr_addr_o == (32'b011110+pc_buff)) $display("BEQ: TRUE");
     else $fatal("BEQ: FALSE");
+
+        // LUI Operation
+    l1i_instr_data_i        = {20'b01, 5'b11101, LUI_TYPE};
+    #(CLK_PERIOD*5)
+    l1i_instr_data_i        = 32'b000000000001_11101_000_11100_0010011; // addi rd28, rs29, 1;
+    #(CLK_PERIOD*5)
+    l1i_instr_data_i        = {7'b0000000, 5'b11100, 5'b00001, F3_SW, 5'b00001, S_TYPE};
+    #(CLK_PERIOD*5)
+    assert(l1d_addr_o == 32'h00000002 && l1d_wr_data_o == {20'b01, 12'b01}) $display("LUI: TRUE");
+    else $fatal("LUI: FALSE");
     $finish;
     
 end
