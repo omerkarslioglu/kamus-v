@@ -1,5 +1,5 @@
 `include "seq_item.sv"
-`include "base_seq.sv"
+`include "sequence.sv"
 `include "sequencer.sv"
 `include "driver.sv"
 `include "monitor.sv"
